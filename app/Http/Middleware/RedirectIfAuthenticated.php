@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Middleware;
-
+use DB;
+use Config;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 

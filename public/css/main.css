@@ -1,0 +1,135 @@
+html {
+  width: 100%;
+}
+
+body {
+  overflow-x: hidden !important;
+}
+
+/* Hide everything under body tag */
+body.show-spinner > *{
+  opacity: 0;
+}
+
+/* Spinner */
+body.show-spinner::before{
+  content: " ";
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  border-top-color: rgba(0, 0, 0, 0.3);
+  animation: spin 1s ease-in-out infinite;
+  -webkit-animation: spin 1s ease-in-out infinite;
+  left: calc(50% - 15px);
+  top: calc(50% - 15px);
+  position: fixed;
+  z-index: 1;
+}
+
+.badge-orange{
+  background-color: orange;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+.cursor:hover{
+  color: white;
+}
+
+.hidden-text {
+  overflow: hidden;
+  position: relative;
+  background: inherit;   
+  height: 40px;
+}
+
+.hidden-text:after {
+ content: '...';       
+ position: absolute;   
+ bottom: 0;            
+ right: 0;            
+ padding: 0 0.3em;     
+ background: inherit; 
+ color: #aaa; 
+}
+
+.hidden-text span:after {
+ content: '\0000a0';  
+ position: absolute;   
+ width: 1000px;        
+ z-index: 1;           
+ background: inherit;    
+}
+
+.img-inactive {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 2px solid #8f2938;
+  border-color: #8f2938 transparent #8f2938 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.lds-dual-ring-white {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+}
+.lds-dual-ring-white:after {
+  content: " ";
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring-white {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+.list-thumbnail{
+  max-width: none!important;
+  width: 100px!important;
+}

@@ -11,6 +11,16 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+
+Route::group(['middleware' => 'change.database'], function(){
+    Auth::routes();
+
+    Route::get('/', function () {
+        return view('welcome');
+    });
 });
+
+
+Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/categories', 'CategoryController@index')->name('categories');
