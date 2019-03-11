@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Promo;
+use App\Item;
+use App\Customer;
 use Illuminate\Http\Request;
 
 class PromoController extends Controller
@@ -24,7 +26,7 @@ class PromoController extends Controller
      */
     public function create()
     {
-        //
+        return view('add_promo-code');
     }
 
     /**
@@ -35,7 +37,39 @@ class PromoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'code' => 'required', 
+            'description' => 'required',
+            'max_uses' => 'required',
+            'max_uses_user' => 'required',
+            'promo_amount' => 'required',
+        ]);
+
+        $promo = new Promo();
+
+        $promo->name = $request->name;
+        $promo->code = $request->code;
+        $promo->description = $request->description;
+        $promo->max_uses = $request->max_uses;
+        $promo->max_uses_customer = $request->max_uses_customer;
+        $promo->promo_amount = $request->promo_amount;
+        $promo->create_date = $request->create_date;
+        $promo->starts_at = $request->starts_at;
+        $promo->expires_at = $request->expires_at;
+
+        if($promo->save()){
+            $items = json_decode($request->items, true);
+            $customers = \json_decode($request->customers, true);
+
+            $promo->items()->attach($items);
+            $promo->customers()->attach($customers);
+
+            return response()->json([
+
+            ]);
+        }
+        
     }
 
     /**

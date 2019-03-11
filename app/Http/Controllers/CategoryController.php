@@ -139,10 +139,10 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
-            'image' => 'required|image'
+            'image' => 'sometimes|image'
         ]);
 
-        $status = $category->update($request->only(['name']));
+        $status = $category->name;
 
          if ($request->hasFile('image'))
          {

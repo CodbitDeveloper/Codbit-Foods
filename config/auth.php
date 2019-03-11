@@ -42,7 +42,7 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
+            'driver' => 'jwt',
             'provider' => 'users',
         ],
 
@@ -52,9 +52,14 @@ return [
         ],
 
         'admin-api' => [
-            'driver' => 'token',
+            'driver' => 'jwt',
             'provider' => 'admins',
-        ]
+        ],
+
+        'customer-api' => [
+            'driver' => 'jwt',
+            'provider' => 'customers',
+        ],
     ],
 
     /*
@@ -84,6 +89,12 @@ return [
             'driver' => 'eloquent',
             'model' => App\Admin::class,
         ],
+
+        'customers' => [
+            'driver' => 'eloquent',
+            'model' => App\Customer::class,
+        ],
+
 
         // 'users' => [
         //     'driver' => 'database',

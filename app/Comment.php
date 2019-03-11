@@ -14,12 +14,12 @@ class Comment extends Model
     protected $table = 'comments';
 
     protected $fillable = [
-        'user_id', 'item_id', 'comment', 'ratings',
+        'customer_id', 'item_id', 'comment', 'ratings',
     ];
 
-    public function user()
+    public function customer()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\Customer');
     }
 
     public function item()

@@ -15,14 +15,14 @@ class CreateCommentsTable extends Migration
     {
         Schema::connection('mysql2')->create('comments', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
+            $table->integer('customer_id')->unsigned();
             $table->integer('item_id')->unsigned();
             $table->text('comment');
             $table->integer('ratings');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('user_id')->references('id')->on('users')
+            $table->foreign('customer_id')->references('id')->on('customers')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')
                 ->onUpdate('cascade')->onDelete('cascade');

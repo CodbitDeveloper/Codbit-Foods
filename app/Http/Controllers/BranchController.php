@@ -19,7 +19,7 @@ class BranchController extends Controller
         $branch->setConnection('mysql2');
 
         if(strtolower(Auth::user()->role) == 'admin'){
-            return view('branches.index')->with('branches', $branches);
+            return view('branches')->with('branches', $branches);
         }else{
             return abort(403);
         }
@@ -46,7 +46,7 @@ class BranchController extends Controller
     {
         $branch = new Branch();
 
-        return view('branches.create', compact('branch'));
+        return view('branches-create', compact('branch'));
     }
 
     /**

@@ -8,6 +8,7 @@ use App\User;
 use App\Branch;
 use App\Restaurant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class RestaurantController extends Controller
 {
@@ -131,7 +132,7 @@ class RestaurantController extends Controller
             );
             CREATE TABLE `comments` (
                 `id` int(10) UNSIGNED NOT NULL,
-                `user_id` int(10) UNSIGNED NOT NULL,
+                `customer_id` int(10) UNSIGNED NOT NULL,
                 `item_id` int(10) UNSIGNED NOT NULL,
                 `comment` text COLLATE utf8mb4_unicode_ci NOT NULL,
                 `ratings` int(11) NOT NULL,
@@ -149,6 +150,13 @@ class RestaurantController extends Controller
                 `created_at` timestamp NULL DEFAULT NULL,
                 `updated_at` timestamp NULL DEFAULT NULL,
                 `deleted_at` timestamp NULL DEFAULT NULL
+            );
+            CREATE TABLE `customer_promo` (
+                `promo_id` int(10) UNSIGNED NOT NULL,
+                `customer_id` int(10) UNSIGNED NOT NULL,
+                `is_used` tinyint(1) NOT NULL DEFAULT '0',
+                `created_at` timestamp NULL DEFAULT NULL,
+                `updated_at` timestamp NULL DEFAULT NULL
             );
             CREATE TABLE `deals` (
                 `id` int(10) UNSIGNED NOT NULL,
@@ -225,7 +233,9 @@ class RestaurantController extends Controller
             );
             CREATE TABLE `item_promo` (
                 `item_id` int(10) UNSIGNED NOT NULL,
-                `promo_id` int(10) UNSIGNED NOT NULL
+                `promo_id` int(10) UNSIGNED NOT NULL,
+                `created_at` timestamp NULL DEFAULT NULL,
+                `updated_at` timestamp NULL DEFAULT NULL
             );
             CREATE TABLE `orders` (
                 `id` int(10) UNSIGNED NOT NULL,
@@ -268,11 +278,9 @@ class RestaurantController extends Controller
                 `code` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                 `description` text COLLATE utf8mb4_unicode_ci,
                 `max_uses` int(10) UNSIGNED DEFAULT NULL,
-                `max_uses_user` int(10) UNSIGNED DEFAULT NULL,
+                `max_uses_customer` int(10) UNSIGNED DEFAULT NULL,
                 `promo_amount` int(11) NOT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT '1',
-                `is_all_item` tinyint(1) NOT NULL DEFAULT '0',
-                `is_all_user` tinyint(1) NOT NULL DEFAULT '0',
                 `is_fixed` tinyint(1) NOT NULL DEFAULT '1',
                 `create_date` timestamp NULL DEFAULT NULL,
                 `starts_at` timestamp NULL DEFAULT NULL,
@@ -280,11 +288,6 @@ class RestaurantController extends Controller
                 `created_at` timestamp NULL DEFAULT NULL,
                 `updated_at` timestamp NULL DEFAULT NULL,
                 `deleted_at` timestamp NULL DEFAULT NULL
-            );
-            CREATE TABLE `promo_user` (
-                `promo_id` int(10) UNSIGNED NOT NULL,
-                `user_id` int(10) UNSIGNED NOT NULL,
-                `is_used` tinyint(1) NOT NULL DEFAULT '0'
             );
             CREATE TABLE `settings` (
                 `id` int(10) UNSIGNED NOT NULL,
@@ -330,12 +333,16 @@ class RestaurantController extends Controller
 
             ALTER TABLE `comments`
             ADD PRIMARY KEY (`id`),
-            ADD KEY `comments_user_id_foreign` (`user_id`),
+            ADD KEY `comments_customer_id_foreign` (`customer_id`),
             ADD KEY `comments_item_id_foreign` (`item_id`);
 
             ALTER TABLE `customers`
             ADD PRIMARY KEY (`id`),
             ADD UNIQUE KEY `customers_email_unique` (`email`);
+            
+            ALTER TABLE `customer_promo`
+            ADD PRIMARY KEY (`promo_id`,`customer_id`),
+            ADD KEY `promo_customer_customer_id_foreign` (`customer_id`);
 
             ALTER TABLE `deals`
             ADD PRIMARY KEY (`id`);
@@ -386,10 +393,6 @@ class RestaurantController extends Controller
 
             ALTER TABLE `promos`
             ADD PRIMARY KEY (`id`);
-
-            ALTER TABLE `promo_user`
-            ADD PRIMARY KEY (`promo_id`,`user_id`),
-            ADD KEY `promo_user_user_id_foreign` (`user_id`);
 
             ALTER TABLE `settings`
             ADD PRIMARY KEY (`id`),
@@ -457,7 +460,11 @@ class RestaurantController extends Controller
 
             ALTER TABLE `comments`
             ADD CONSTRAINT `comments_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-            ADD CONSTRAINT `comments_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+            ADD CONSTRAINT `comments_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+            
+            ALTER TABLE `customer_promo`
+            ADD CONSTRAINT `promo_customer_promo_id_foreign` FOREIGN KEY (`promo_id`) REFERENCES `promos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `promo_customer_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `deliveries`
             ADD CONSTRAINT `deliveries_dispatch_id_foreign` FOREIGN KEY (`dispatch_id`) REFERENCES `dispatches` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -487,10 +494,6 @@ class RestaurantController extends Controller
             ADD CONSTRAINT `orders_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `orders_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `orders_payment_type_id_foreign` FOREIGN KEY (`payment_type_id`) REFERENCES `payment_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-            ALTER TABLE `promo_user`
-            ADD CONSTRAINT `promo_user_promo_id_foreign` FOREIGN KEY (`promo_id`) REFERENCES `promos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-            ADD CONSTRAINT `promo_user_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `users`
             ADD CONSTRAINT `users_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -526,6 +529,14 @@ class RestaurantController extends Controller
                     if($user->save()){
                         $result = false;
                     }
+
+                    //Artisan::call('passport:install');
+                    config(["database.default" => 'mysql2']);
+                    config(["database.connections.mysql2.database" => $request->DB_name]);
+                    DB::purge();
+                    
+                    shell_exec('php ../artisan passport:install');
+                    
                     return response()->json([
                         'message' => 'database created and restaurant updated'
                     ]);

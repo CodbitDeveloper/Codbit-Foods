@@ -22,6 +22,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
+         //config(['auth.defaults.guard' => 'web']);
          $this->middleware('auth');
          Config::set('database.connections.mysql2.database', session('db_name'));
     }

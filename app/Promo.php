@@ -15,13 +15,13 @@ class Promo extends Model
         'name', 'promo_amount',
     ];
 
-    public function item()
+    public function items()
     {
-        return $this->belongsTo('App\Item');
+        return $this->belongsToMany('App\Item', 'item_promo')->withTimestamps();
     }
 
-    public function user()
+    public function customers()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsToMany('App\Customer', 'customer_promo')->withTimestamps();
     }
 }

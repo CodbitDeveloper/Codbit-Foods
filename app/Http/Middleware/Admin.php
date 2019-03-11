@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Auth;
 
 class Admin
 {
@@ -18,6 +19,7 @@ class Admin
         if(Auth::guard('admin')->user()){
             return $next($request);
         }
-        return $next($request);
+
+       return redirect('admin/login');
     }
 }

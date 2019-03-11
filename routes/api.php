@@ -25,7 +25,7 @@ Route::post('user/add', 'UserController@store')->name('user.add');
 
 Route::get('/init-dashboard-cards', 'HomeController@setup_dashboard')->name('init-dashboard-cards');
 
-Route::get('/orders/get-pending', 'OrderController@pending_orders')->name('orders.pending');
+Route::get('/orders/get-pending', 'OrderController@pending_orders')->name('orders.pending')->middleware('jwt.auth');
 Route::get('/orders/get-weekly-orders', 'HomeController@week_sales')->name('orders.weekly');
 
 Route::get('/categories/cummulated', 'CategoryController@getCategoryItems')->name('categories.cummulated');

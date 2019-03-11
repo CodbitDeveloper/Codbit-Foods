@@ -45,6 +45,6 @@ class Item extends Model
 
     public function promos()
     {
-        return $this->hasMany('App\Promo');
+        return $this->belongsToMany('App\Promo', 'item_promo')->withTimestamps();
     }
 }

@@ -3,18 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Image;
+use Config;
 use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        Config::set('database.connections.mysql2.database', session('db_name'));
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
-        //
+        $itemId = DB::table('items')->where('id', $id)->get();
+
+        return view('admin.addImages')->with('itemId', $itemId);
     }
 
     /**
@@ -35,7 +43,12 @@ class ImageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fileName = Utils::saveImageFromDz($request, 'file', 'img/alt_foods');
+        
+        $itemId = $request->item_id;
+        $add_img = DB::table('images')->insert(['filename' => $fileName, 'item_id' => $itemId]);
+
+        return back();
     }
 
     /**

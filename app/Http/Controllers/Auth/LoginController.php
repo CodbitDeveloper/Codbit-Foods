@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Auth;
 
+use DB;
 use Auth;
 use Config;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
 use App\User;
 use App\Restaurant;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use DB;
+
 
 class LoginController extends Controller
 {
@@ -78,6 +81,8 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $domain = '';
+        $credentials = $request->only('username', 'password');
+        
         if (($pos = strpos($request->username, "@")) !== FALSE) { 
             $domain = substr($request->username, $pos+1); 
         }
@@ -107,10 +112,10 @@ class LoginController extends Controller
 
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
             $request->session()->put('restaurant', $restaurant);
-            $user = User::where('username', '=', $request->username)->first();
-            //$user->api_token = bin2hex(openssl_random_pseudo_bytes(30));
-            $user->save();
-            return $this->sendLoginResponse($request, $user);
+
+            $token = JWTAuth::attempt($credentials);
+            
+            return $this->sendLoginResponse($request);
         }
 
         // If the login attempt was unsuccessful we will increment the number of attempts
@@ -126,5 +131,26 @@ class LoginController extends Controller
     {
         $restaurant = Restaurant::where('domain', $request->domain)->first();
         $request->session()->put('restaurant', $restaurant);
+    }
+
+    public function refresh()
+    {
+        return $this->respondWithToken(JWTAuth::refresh());
+    }
+
+    /**
+     * Get the token array structure.
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => JWTAuth::factory()->getTTL() * 60
+        ]);
     }
 }

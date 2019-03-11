@@ -5,12 +5,23 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable, SoftDeletes;
 
     protected $connection = 'mysql2';
+
+    public function getJWTIdentifier() 
+    {
+        return $this->getKey();
+    }
+    
+    public function getJWTCustomClaims() 
+    {
+        return [];
+    }
     
     /**
      * The attributes that are mass assignable.
@@ -35,14 +46,5 @@ class User extends Authenticatable
     {
         return $this->belongsTo('App\Branch');
     }
-
-    public function comments()
-    {
-        return $this->hasMany('App\Comment');
-    }
-
-    public function promos()
-    {
-        return $this->hasMany('App\Promo');
-    }
+    
 }
