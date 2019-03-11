@@ -1,7 +1,7 @@
 @extends('layouts.dashboard', ['page' => 'dashboard'])
 @section('styles')
-<link rel="stylesheet" href="css/vendor/dataTables.bootstrap4.min.css" />
-<link rel="stylesheet" href="css/vendor/datatables.responsive.bootstrap4.min.css" />
+<link rel="stylesheet" href="{{asset('css/vendor/dataTables.bootstrap4.min.css')}}" />
+<link rel="stylesheet" href="{{asset('css/vendor/datatables.responsive.bootstrap4.min.css')}}" />
 @endsection
 @section('content')
 <div id="app" class="container-fluid">
@@ -18,16 +18,15 @@
                                     <div class="card-body text-center">
                                         <i class="iconsmind-Alarm"></i>
                                         <p class="card-text mb-0">Pending Orders</p>
-                                        <p class="lead text-center" v-if="!isLoadingCards">@{{pending_orders}}</p>
-                                        <div class="lds-dual-ring mr-auto ml-auto" v-if="isLoadingCards"></div>
+                                        <p class="lead text-center" id="pending">{{$pending_orders->count()}}</p>
                                     </div>
                                 </a>
                                 <a href="#" class="card">
                                     <div class="card-body text-center">
                                         <i class="iconsmind-Arrow-Refresh"></i>
                                         <p class="card-text mb-0">In Progress</p>
-                                        <p class="lead text-center" v-if="!isLoadingCards">@{{in_progress}}</p>
-                                        <div class="lds-dual-ring mr-auto ml-auto" v-if="isLoadingCards"></div>
+                                        <p class="lead text-center" id="in-progress" style="display:none;">11</p>
+                                        <div class="lds-dual-ring mr-auto ml-auto"></div>
                                     </div>
                                 </a>
 
@@ -35,8 +34,8 @@
                                     <div class="card-body text-center">
                                         <i class="iconsmind-Thumb"></i>
                                         <p class="card-text mb-0">Completed Today</p>
-                                        <p class="lead text-center" v-if="!isLoadingCards">@{{completed_orders}}</p>
-                                        <div class="lds-dual-ring mr-auto ml-auto" v-if="isLoadingCards"></div>
+                                        <p class="lead text-center" id="completed" style="display:none;">11</p>
+                                        <div class="lds-dual-ring mr-auto ml-auto"></div>
                                     </div>
                                 </a>
 
@@ -44,8 +43,8 @@
                                     <div class="card-body text-center">
                                         <i class="iconsmind-Coins"></i>
                                         <p class="card-text mb-0">Daily Sales</p>
-                                        <p class="lead text-center" v-if="!isLoadingCards">GH&cent; @{{sales}}</p>
-                                        <div class="lds-dual-ring mr-auto ml-auto" v-if="isLoadingCards"></div>
+                                        <p class="lead text-center" id="sales" style="display:none;">11</p>
+                                        <div class="lds-dual-ring mr-auto ml-auto"></div>
                                     </div>
                                 </a>
 
@@ -53,8 +52,8 @@
                                     <div class="card-body text-center">
                                         <i class="iconsmind-Speach-BubbleDialog"></i>
                                         <p class="card-text mb-0">New Comments</p>
-                                        <p class="lead text-center" v-if="!isLoadingCards">@{{comments}}</p>
-                                        <div class="lds-dual-ring mr-auto ml-auto" v-if="isLoadingCards"></div>
+                                        <p class="lead text-center" id="comments" style="display:none;">11</p>
+                                        <div class="lds-dual-ring mr-auto ml-auto"></div>
                                     </div>
                                 </a>
                             </div>
@@ -69,38 +68,41 @@
                             <div class="card">
                                 <div class="position-absolute card-top-buttons">
                                     <button class="btn btn-header-light icon-button">
-                                        <div class="lds-dual-ring" v-if="isLoadingOrders"></div>
-                                        <i class="simple-icon-check" v-if="!isLoadingOrders"></i>
+                                        <i class="simple-icon-check"></i>
                                     </button>
                                 </div>
 
                                 <div class="card-body">
                                     <h5 class="card-title">Pending Orders</h5>
                                     <div class="scroll dashboard-list-with-thumbs">
-                                        <div class="d-flex flex-row mb-3" v-for="order in orders">
+                                        @foreach($pending_orders as $order)
+                                        <div class="d-flex flex-row mb-3">
                                             <a class="d-block position-relative" href="#">
-                                                <img  :src="'/img/foods/' + ( order.items[0].image ? order.items[0].image : 'food-default.png' ) " :alt="order.items[0].name" class="dashboard-pending list-thumbnail border-0" />
-                                                <span class="badge badge-pill badge-theme-2 position-absolute badge-top-right">GH&cent; @{{order.total_price}}</span>
+                                                <img  src="/img/foods/{{$order->items[0]->image ? $order->items[0]->image : 'food-default.png' }}" alt="{{$order->items[0]->name}}" class="dashboard-pending list-thumbnail border-0" />
+                                                <span class="badge badge-pill badge-theme-2 position-absolute badge-top-right">GH&cent; {{$order->total_price}}</span>
                                             </a>
                                             <div class="pl-3 pt-2 pr-2 pb-2">
                                                 <a href="#">
-                                                    <p class="list-item-heading">@{{order.items[0].name}} <span class="text-muted mb-1 text-small" v-if="order.items.length - 1 > 0">and
-                                                            @{{order.items.length - 1}} other item<span  v-if="order.items.length - 1 > 1">s</span></span></p>
+                                                    <p class="list-item-heading">{{$order->items[0]->name}} @if($order->items->count() > 1)<span class="text-muted mb-1 text-small">and
+                                                            {{$order->items->count() - 1}} other @if($order->items->count() > 2)<span>items</span> @else<span>item</span> @endif</span>@endif</p>
                                                     <div class="pr-4 d-none d-sm-block">
-                                                        <p class="text-muted mb-1 text-small">@{{order.customer.firstname}} @{{order.customer.lastname}} - @{{order.address}}</p>
+                                                        <p class="text-muted mb-1 text-small">{{$order->customer->firstname.' '.$order->customer->lastname.' - '.$order->address}}</p>
                                                     </div>
-                                                    <div class="text-primary text-small font-weight-medium d-none d-sm-block" :datetime="order.created_at">@{{order.created_at}}</div>
+                                                    <div class="text-primary text-small font-weight-medium d-none d-sm-block">{{Carbon\Carbon::parse($order->created_at)->diffForHumans()}}</div>
                                                 </a>
                                             </div>
                                         </div>
-                                        <h6 class="text-muted" v-if="orders.length < 1 && !isLoadingOrders">
+                                        @endforeach
+                                        @if($pending_orders->count() <  1)
+                                        <h6 class="text-muted">
                                             No pending orders currently. <a href="/orders">View previous orders</a>
                                         </h6>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-4">
+                        <div class="col-lg-6 mb-4">
                             <div class="card">
                                 <div class="position-absolute card-top-buttons">
 
@@ -132,14 +134,16 @@
                                     <th>Item Count</th>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="category in categories">
+                                @foreach($categories as $category)
+                                    <tr>
                                         <td>
-                                            @{{category.category}}
+                                            {{$category->name}}
                                         </td>
                                         <td>
-                                            @{{category.items}}
+                                            {{$category->items->count()}}
                                         </td>
                                     </tr>
+                                @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -242,68 +246,82 @@
 @endsection
 
 @section('scripts')
-<script src="js/vendor/Chart.bundle.min.js" ></script>
-<script src="js/vendor/datatables.min.js"></script>
-<script src="js/vendor/chartjs-plugin-datalabels.js" ></script>
-<script src="js/vendor/owl.carousel.min.js" async ></script>
-<script src="js/vendor/jquery.barrating.min.js" async ></script>
-<script src="js/vendor/nouislider.min.js" async ></script>
+<script src="{{asset('js/vendor/Chart.bundle.min.js')}}" ></script>
+<script src="{{asset('js/vendor/datatables.min.js')}}"></script>
+<script src="{{asset('js/vendor/owl.carousel.min.js')}}" ></script>
+<script src="{{asset('js/vendor/nouislider.min.js')}}" ></script>
 <script>
-    var app = new Vue({
-        el: '#app',
-        data: {
-            isLoadingCards: true,
-            isLoadingOrders: true,
-            isLoadingSales: true,
-            isLoadingCategories: true,
-            isLoadingCustomers: true,
-            pending_orders: 0,
-            completed_orders: 0,
-            in_progress: 0,
-            sales: 0,
-            comments: 0,
-            orders : [],
-            categories: []
-        },
-        methods: {
-            loadCards: function(){
-                let self = this;
-                $.ajax({
+function initCarousel(){
+if ($(".owl-carousel.dashboard-numbers").length > 0) {
+                $(".owl-carousel.dashboard-numbers")
+                    .owlCarousel({
+                    margin: 15,
+                    loop: true,
+                    autoplay: true,
+                    stagePadding: 5,
+                    responsive: {
+                        0: {
+                        items: 1
+                        },
+                        320: {
+                        items: 2
+                        },
+                        576: {
+                        items: 3
+                        },
+                        1200: {
+                        items: 3
+                        },
+                        1440: {
+                        items: 3
+                        },
+                        1800: {
+                        items: 4
+                        }
+                    }
+                    })
+                    .data("owl.carousel")
+                    .onResize();
+            }
+        }
+
+        initCarousel();
+</script>
+@endsection
+
+@section('customjs')
+<script>
+        $(window).on('load', function(){
+            $.ajax({
                     method: 'GET',
                     url: '/api/init-dashboard-cards',
-                    success: function(data, status, xhr){
-                        self.pending_orders = data.pending_orders;
-                        self.completed_orders = data.completed_orders;
-                        self.in_progress = data.inProgress_orders;
-                        self.sales = data.total_price;
-                        self.comments = data.comments;
-                        self.isLoadingCards = false;
+                    success: function(data){
+                        $('.lds-dual-ring').css('display', 'none');
+                        
+                        $('#in-progress').css('display', 'block');
+                        $('#completed').css('display', 'block');
+                        $('#sales').css('display', 'block');
+                        $('#comments').css('display', 'block');
+
+                        $('.owl-carousel').trigger('destroy.owl.carousel');
+                        callback(data.in_progress, data.completed, data.total_price, data.comments);
+                        initCarousel();
                     },
-                    error: function(err, desc){
+                    error: function(err){
                         console.log(err);
-                        self.isLoadingCards = false;
+                        $('.lds-dual-ring').css('display', 'none');
+                        $('#in-progress').css('display', 'block');
+                        $('#completed').css('display', 'block');
+                        $('#sales').css('display', 'block');
+                        $('#comments').css('display', 'block');
+
+                        $('#in-progress').html('N/A');
+                        $('#completed').html('N/A');
+                        $('#sales').html('N/A');
+                        $('#comments').html('N/A');
                     }
                 });
-            },
 
-            loadPendingOrders: function(){
-                let self = this;
-                $.ajax({
-                    method: 'GET',
-                    url: '/api/orders/get-pending',
-                    success: function(data, status, xhr){
-                        self.orders = data.orders;
-                        self.isLoadingOrders = false;
-                    },
-                    error: function(err, desc){
-                        console.log(err);
-                        self.isLoadingOrders = false;
-                    }
-                });
-            },
-
-            loadWeeklyOrders: function(){
-                let self = this;
                 $.ajax({
                     method: 'GET',
                     url : '/api/orders/get-weekly-orders',
@@ -434,29 +452,14 @@
                         console.log(err)
                     }
                 });
-            },
 
-            loadCategories: function(){
-                let self = this;
-                $.ajax({
-                    method: 'GET',
-                    url: '/api/categories/cummulated',
-                    success: function(data, status, xhr){
-                        self.categories = data.categories;
-                        self.isLoadingCategories = false;
-                    },
-                    error: function(err, desc){
-                        self.isLoadingCategories = false;
-                    }
-                })
-            }
-        },
-        mounted : function() {
-            this.loadCards();
-            this.loadPendingOrders();
-            this.loadWeeklyOrders();
-            this.loadCategories();
-        }
-        });
+                function callback(pr, cm, tp, co){                    
+                        $('#completed').html(cm);
+                        $('#in-progress').html(pr);
+                        $('#sales').html('GH&cent; '+tp);
+                        $('#comments').html(co);
+
+                }
+        })
 </script>
 @endsection

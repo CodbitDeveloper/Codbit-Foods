@@ -3,10 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Branch;
+use Config;
+use Auth;
+
 use Illuminate\Http\Request;
 
 class BranchController extends Controller
 {
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     * 
+     */
+    public function __construct()
+    {
+         $this->middleware('auth');
+         Config::set('database.connections.mysql2.database', session('db_name'));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,10 +32,8 @@ class BranchController extends Controller
     {
         $branches = Branch::latest()->get();
 
-        $branch->setConnection('mysql2');
-
         if(strtolower(Auth::user()->role) == 'admin'){
-            return view('branches.index')->with('branches', $branches);
+            return view('branches')->with('branches', $branches);
         }else{
             return abort(403);
         }

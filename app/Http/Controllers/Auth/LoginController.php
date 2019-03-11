@@ -106,10 +106,12 @@ class LoginController extends Controller
         }
 
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-            $request->session()->put('restaurant', $restaurant);
+            $request->session()->put('restaurant_name', $restaurant->name);
+            $request->session()->put('restaurant_domain', $restaurant->domain);
+            $request->session()->put('restaurant_logo', $restaurant->logo);
             $user = User::where('username', '=', $request->username)->first();
             //$user->api_token = bin2hex(openssl_random_pseudo_bytes(30));
-            $user->save();
+            //$user->save();
             return $this->sendLoginResponse($request, $user);
         }
 

@@ -105,14 +105,14 @@ body.show-spinner::before{
 
 .lds-dual-ring-white {
   display: inline-block;
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
 }
 .lds-dual-ring-white:after {
   content: " ";
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   margin: 1px;
   border-radius: 50%;
   border: 2px solid #fff;

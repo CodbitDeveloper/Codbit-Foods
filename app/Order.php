@@ -25,7 +25,7 @@ class Order extends Model
 
     public function items()
     {
-        return $this->belongsToMany('App\Item', 'item_order')->withTimestamps();
+        return $this->belongsToMany('App\Item', 'item_order')->withPivot('quantity')->withTimestamps();
     }
 
     public function paymentTypes()

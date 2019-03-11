@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Order;
+use App\Customer;
+use App\Category;
+use App\Item;
+
 use Illuminate\Http\Request;
 use Config;
 
@@ -21,9 +25,17 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::all();
-        
-        return view('orders.index',compact('orders'));
+        $orders = Order::with('customer')->latest()->get()->groupBy('status');
+        $customers = Customer::all();
+        $categories = Category::with('items')->whereHas(
+            'items', function($q){
+                $q = Item::where('active', 1)->get();
+            }
+        )->get();
+        return view('orders',compact('orders', 'categories', 'customers'));
+        /*return response()->json([
+            'orders' => $orders
+        ]);*/
     }
 
     /**
@@ -81,29 +93,63 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    /*public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
-            'customer_id' => 'required',
-            'total_price' => 'required',
-            'address' => 'required'
+            'items' => 'required',
+            'total' => 'required',
+            'branch_id' => 'required'
         ]);
 
-        $order = Order::create([
-            'customer_id' => Auth::id(),
-            'total_price' => $request->total_price,
-            'address' => $request->address,
+        if($request->customer_id == null){
+            $request->validate([
+                'firstname' => 'required',
+                'lastname' => 'required',
+                'phone' => 'required',
+                'email' => 'required' 
+           ]);
+           
+           $customer = new Customer();
+           $customer->firstname = $request->firstname;
+           $customer->lastname = $request->lastname;
+           $customer->email = $request->email;
+           $customer->phone = $request->phone;
 
-        ]);
+           $customer->save();
 
-       // $order->items->attach($id);
+           $customer_id = $customer->id;
+        }else{
+            $customer_id  = $request->customer_id;
+        }
 
-        return response()->json([
-            'status' => (bool) $order,
-            'data'   => $order,
-            'message' => $order ? 'Order Created!' : 'Error Creating Order'
-        ]);
-    }*/
+        $order = new Order();
+        $order->customer_id = $customer_id;
+        $order->address = "In shop purchase";
+        $order->total_price = $request->total;
+        $order->to_be_delivered = false;
+        $order->status = "In-Progress";
+        $order->has_paid = 1;
+        $order->payment_type_id = 4;
+        $order->branch_id = $request->branch_id;
+
+        if($order->save()){
+            $items = json_decode($request->items, true);
+
+            $order->items()->attach($items);
+
+            return response()->json([
+                'error' => false,
+                'message' => 'Order saved.',
+                'data' => $order
+            ]);
+
+        }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'Could not save the order'
+            ]);
+        }
+    }
 
     /**
      * Display the specified resource.
@@ -123,116 +169,32 @@ class OrderController extends Controller
      * @param  \App\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(Request $request)
     {
 
-        //$item = $request->item_id;
-        $order = Order::with('customer')->findOrFail($id);
+        $request->validate([
+            'order_id'=>'required',
+            'status' => 'required'
+        ]);
 
-        if($request->get('status')){
-             $order->status = $request->get('status');
-             if($order->save()){
-                $token = $order->customer->token;
-                $title = "Your order has been updated";
-                $message = "Your order (ORDER #".$order->id.") has been updated to ".$request->get('status');
-                
-                $tokens = array();
-                array_push($tokens, $token);
-                
-                $data = array(
-                    'title' => $title,
-                    'message' => $message
-                );
+        $order = Order::where('id', '=', $request->order_id)->first();
 
-                $fields = array(
-                    'registration_ids' => $tokens,
-                    'notification' => array(
-                        "body" => "Your order (ORDER #".$order->id.") has been updated to ".$request->get('status'),
-                        'title' => $title
-                    )
-                );
-
-                $url = 'https://fcm.googleapis.com/fcm/send';
- 
-						$headers = array(
-							'Authorization: key=' . 'AAAAGG2mqGc:APA91bEnltvOsyA7z4KZc-VNUCcCszVJ1_e8lqWLcIRy8rV7bTPWWgiyqbneQK8JUYCHvzMBSrYYW7Na9oXwDdy-iLfZHqyl_BEQnZk69QEpbi17gb1t3G5ADJAJY9gFAwe81j9ytXhi',
-							'Content-Type: application/json'
-						);
-						$ch = curl_init();
-						curl_setopt($ch, CURLOPT_URL, $url);
-						curl_setopt($ch, CURLOPT_POST, true);
-						curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-						curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-						curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-                        $result = curl_exec($ch);
-                        
-						curl_close($ch);
-                return response()->json([
-                    'message' => 'Order was updated', 
-                    'error' => false,
-                    'token' => $token,
-                    'fcm_result' => $result
-                ]);
-             }else{
-                return response()->json([
-                    'message' => 'Order could not be updated.', 
-                    'error' => true
-                ]);     
-             }
-        }else{
+        $order->status = $request->get('status');
+        if($order->update()){
             return response()->json([
-                'message' => 'Required field missing', 
-                'error' => true
+                'message' => 'Order was updated', 
+                'error' => false
             ]);
-        }
+         }else{
+            return response()->json([
+                'message' => 'Order could not be updated.', 
+                'error' => true
+            ]);     
+         }
         
     }
 
 
-    /**
-     * Save orders for a single customer 
-     */
-    public function saveOrder(Request $request){
-        $request->validate([
-            'customer_id' => 'required',
-            'total_price' => 'required',
-            'items' => 'required',
-            'address' => 'required',
-            'payment_type_id' => 'required',
-            'extra_note' => 'required'
-        ]);
-
-        $items = json_decode($request->items);
-
-        $order = new Order();
-        $order->setConnection('mysql2');
-
-        $order->customer_id = $request->customer_id;
-        $order->total_price = $request->total_price;
-        $order->address = $request->address;
-        $order->payment_type_id = $request->payment_type_id;
-        $order->extra_note = $request->extra_note;
-        $order->to_be_delivered = $request->to_be_delivered;
-
-        if($order->save()){
-           foreach($items as $item){
-               $id = $item['item']['id'];
-               $quantity = $item['quantity'];
-               DB::insert("INSERT INTO item_order(item_id, order_id, quantity) VALUES (?, ?, ?)", [$id, $order->id, $quantity]);
-
-                return response()->json([
-                    'error' => false,
-                    'message' => 'Order saved'
-                ]);
-           }
-        }else{
-            return response()->json([
-                'error' => true,
-                'message' => 'Could not save the order'
-            ]);
-        }
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -261,6 +223,7 @@ class OrderController extends Controller
         ]);
     }
 
+
     public function pending_orders()
     {
         $orders = Order::where('status', 'pending')->with('items', 'customer')->latest()->get();
@@ -269,5 +232,10 @@ class OrderController extends Controller
             'orders' => $orders,
             'message' => $orders ? 1 : 0
         ]);
+    }
+
+    public function single($order){
+        $order = Order::with('items', 'customer')->where('id', '=', $order)->first();
+        return view('order-details', compact('order'));
     }
 }

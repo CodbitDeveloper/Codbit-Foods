@@ -3,17 +3,30 @@
 namespace App\Http\Controllers;
 
 use Auth;
+use Config;
+
 use App\User;
+use App\Branch;
+
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+    public function __construct()
+    {
+         $this->middleware('auth');
+         Config::set('database.connections.mysql2.database', session('db_name'));
+    }
+
+
     public function index ()
       {
         $users = User::all();
+        $branches = Branch::all();
 
         if(strtolower(Auth::user()->role) == 'admin'){
-          return view('users.index')->with('users', $users);
+          return view('employees')->with('users', $users)->with('branches', $branches);
          }else{
            return abort(403);
          }
@@ -55,8 +68,8 @@ class UserController extends Controller
         $request->validate([
           'firstname' => 'required|string',
           'lastname' => 'required|string',
-          'username' => 'required|string|unique:users',
-          'password' => 'required|confirmed|min:6|max:100',
+          'username' => 'required|string',
+          'password' => 'required|min:6|max:100',
           'gender' => 'required',
           'phone' => 'required',
           'branch_id' => 'required',
@@ -69,7 +82,7 @@ class UserController extends Controller
 
         $user->firstname = $request->firstname;
         $user->lastname = $request->lastname;
-        $user->username = $request->username;
+        $user->username = $request->username.'@'.session('restaurant_domain');
         $user->password = bcrypt($request->password);
         $user->gender = $request->gender;
         $user->phone = $request->phone;
@@ -79,7 +92,7 @@ class UserController extends Controller
         if($user->save()){
           return response()->json([
             'data' => $user,
-            'message' => 'Successfully created user',
+            'message' => 'User '.$user->username.' created successfully',
           ], 201);
         }else{
           return response()->json([
@@ -95,40 +108,34 @@ class UserController extends Controller
        */
       public function update (Request $request, User $user)
       {
-         $user = User::where('id', $request->id)->first();
-         $status = true;
-
          $request->validate([
-             'firstname' => 'required',
-             'lastname' =>'required',
-             'username' => 'required',
-             'phone' => 'required'
-         ]);
-         
-         if(request('password_reset') == 'yes'){
-            if(Hash::check(request('old_password'), $user->password)){
-                $user->password = bcrypt(request('new_password'));
-            }else{
-                return response()->json([
-                    'error' => true,
-                    'message' => 'The old password you provided is wrong'
-                ]);
-            }
-        }
-        
-        $user->firstname = $request->firstname;
-        $user->lastname = $request->lastname;
-        $user->username = $request->username;
-        $user->phone = $request->phone;
+         'id' => 'required',
+         'firstname' => 'required',
+         'lastname' =>'required',
+         'phone' => 'required',
+         'branch_id' => 'required',
+         'role' => 'required',
+         'gender' => 'required'
+      ]);
 
-        if($user->update()){
-            $status = false;
-        }
+      $user = User::where('id', $request->id)->first();
+      $error = true;
+        
+      $user->firstname = $request->firstname;
+      $user->lastname = $request->lastname;
+      $user->phone = $request->phone;
+      $user->branch_id = $request->branch_id;
+      $user->role = $request->role;
+      $user->gender = $request->gender;
+
+      if($user->update()){
+        $status = false;
+      }
        
-        return response()->json([
-            'error' => $status,
-            'message' => !$status ? 'User Updated Successfully!' : 'Could not update user'
-            ]);
+      return response()->json([
+         'error' => $status,
+         'message' => !$status ? 'User account updated!' : 'Could not update user'
+         ]);
       }
 
       /**
