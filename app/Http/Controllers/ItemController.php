@@ -5,10 +5,24 @@ namespace App\Http\Controllers;
 use App\Item;
 use App\Utils;
 use App\Category;
+use App\Ingredient;
+
+use Config;
+
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+         $this->middleware('auth');
+         Config::set('database.connections.mysql2.database', session('db_name'));
+    }
     /**
      * Display a listing of the resource.
      *
@@ -16,11 +30,10 @@ class ItemController extends Controller
      */
     public function index ()
     {
-        $items      = Item::all();
+        $items      = Item::with('category')->get();
         $categories = Category::all();
 
-        return view('items.index', compact('items', 'categories'));
-        //return response()->json(Item::all(), 200);
+        return view('items', compact('items', 'categories'));
     }
 
     public function all_items ()
@@ -55,36 +68,66 @@ class ItemController extends Controller
             'name' => 'required|string',
             'price' => 'required|integer',
             'description' => 'required',
-            'category_id' => 'required',
-            'image' => 'required|image',
+            'category_id' => 'required'
         ]);
+        
 
         $item = new Item();
-        $item->setConnection('mysql2');
 
         $item->name = $request->name;
         $item->price = $request->price;
         $item->description = $request->description;
         $item->category_id = $request->category_id;
 
-        if($request->hasFile('image')){
-            $fileName = Utils::saveImage($request, 'image', 'img/food-item');
+        if($request->hasFile('file')){
+            $fileName = Utils::saveImageFromDz($request, 'file', 'img/foods');
             $item->image = $fileName;
         }else{
-            return response()->json(["status" => 'no-image']);
+            return response()->json(["message" => 'no-image', 'error'=>true]);
         }
 
         if($item->save()){
-            return response()->json([
-                'status'  => (bool) $item,
-                'data'    => $item,
-                'id' => $item->id,
-                'message' => 'Item Created Successfully!'
-            ]);
+           if($request->ingredients != null){
+            $ingredients = explode(",", $request->ingredients);
+            $item_ingredients = array();
+
+            if($ingredients != null){
+               foreach($ingredients as $ingredient){
+                  array_push($item_ingredients, array(
+                     'item_id' => $item->id,
+                     'name' => $ingredient
+                  ));
+               }
+
+               Ingredient::insert($item_ingredients);
+               
+               return response()->json([
+                  'error'  => false,
+                  'data'    => $item,
+                  'id' => $item->id,
+                  'message' => 'Item created!'
+               ]);
+
+            }else{
+               return response()->json([
+                  'error'  => true,
+                  'data'    => $item,
+                  'id' => $item->id,
+                  'message' => 'Item created. Could not save ingredients.'
+               ]);
+            }
+           }else{
+               return response()->json([
+                  'error'  => false,
+                  'data'    => $item,
+                  'id' => $item->id,
+                  'message' => 'Item created!'
+               ]);
+            }
         }else{
             return response()->json([
                 'error' => true,
-                'message' => 'Error creating item'
+                'message' => 'Could not create the item'
             ]);
         }
       
@@ -167,6 +210,29 @@ class ItemController extends Controller
          }
       }
 
+
+      public function toggleActive (Request $request, Item $item)
+      {
+         $item->active = !$item->active;
+
+         if ($item->save())
+         {
+            return response()->json([
+               'error'  => false,
+               'data'    => $item,
+               'message' => 'Item has been updated!'
+            ]);
+         }
+         else
+         {
+            return response()->json([
+               'message' => 'Could not update the item',
+               'error'   => true
+            ]);
+         }
+      }
+
+
       /**
        * Remove the specified resource from storage.
        *
@@ -182,5 +248,11 @@ class ItemController extends Controller
             'status'  => $status,
             'message' => $status ? 'Item Deleted!' : 'Error Deleting Item.'
          ]);
+      }
+
+      public function viewItem($item){
+          $item = Item::with(['category', 'comments', 'orders', 'ingredients', 'images', 'comments.user'])->where('id', $item)->first();
+
+          return view('item-details', compact('item'));
       }
 }

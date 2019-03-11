@@ -2,8 +2,7 @@
 
 Table of Contents
 
-01. Css Loading Util
-02. Theme Selector And Initializer
+01. Avatar
 */
 
 (function(w, d){
@@ -110,68 +109,6 @@ function loadStyle(href, callback) {
   head.appendChild(link);
 }
 /* 02. Theme Selector And Initializer */
-(function($) {
-  if ($().dropzone) {
-    Dropzone.autoDiscover = false;
-  }
-  
-  var themeColorsDom =
-  '<div class="theme-colors"> <div class="p-4"> <p class="text-muted mb-2">Light Theme</p> <div class="d-flex flex-row justify-content-between mb-4"> <a href="#" data-theme="dore.light.red.min.css" class="theme-color theme-color-red"></a> </div> <p class="text-muted mb-2">Dark Theme</p> <div class="d-flex flex-row justify-content-between"><a href="#" data-theme="dore.dark.red.min.css" class="theme-color theme-color-red"></a> </div> </div> <a href="#" class="theme-button"> <i class="simple-icon-settings"></i> </a> </div>';
-  $("body").append(themeColorsDom);
-  var theme = "dore.light.red.min.css";
-
-  if (typeof Storage !== "undefined") {
-    if (localStorage.getItem("theme")) {
-      theme = localStorage.getItem("theme");
-    }
-  }
-
-  $(".theme-color[data-theme='" + theme + "']").addClass("active");
-
-  loadStyle("css/" + theme, onStyleComplete);
-  function onStyleComplete() {
-    setTimeout(onStyleCompleteDelayed, 300);
-  }
-
-  function onStyleCompleteDelayed() {
-    var $dore = $("body").dore();
-  }
-
-  $("body").on("click", ".theme-color", function(event) {
-    event.preventDefault();
-    var dataTheme = $(this).data("theme");
-    if (typeof Storage !== "undefined") {
-      localStorage.setItem("theme", dataTheme);
-      window.location.reload();
-    }
-  });
-
-
-  $(".theme-button").on("click", function(event) {
-    event.preventDefault();
-    $(this)
-      .parents(".theme-colors")
-      .toggleClass("shown");
-  });
-  $(document).on("click", function(event) {
-    if (
-      !(
-        $(event.target)
-          .parents()
-          .hasClass("theme-colors") ||
-        $(event.target)
-          .parents()
-          .hasClass("theme-button") ||
-        $(event.target).hasClass("theme-button") ||
-        $(event.target).hasClass("theme-colors")
-      )
-    ) {
-      if ($(".theme-colors").hasClass("shown")) {
-        $(".theme-colors").removeClass("shown");
-      }
-    }
-  });
-})(jQuery);
 
 
 

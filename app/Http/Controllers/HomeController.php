@@ -7,6 +7,7 @@ use Config;
 
 use App\Order;
 use App\Comment;
+use App\Category;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,7 +15,6 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
 
-    protected $db;
     /**
      * Create a new controller instance.
      *
@@ -34,14 +34,14 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $pending_orders = Order::with('customer')->where('status', 'pending')->get();
+        $categories = Category::with('items')->get();
+        return view('home', compact('pending_orders', 'categories'));
     }
 
     public function setup_dashboard()
     {
         $completed_orders = Order::where('status', 'completed')->whereDate('created_at', Carbon::today())->get()->count();
-
-        $pending_orders = Order::where('status', 'pending')->whereDate('created_at', Carbon::today())->get()->count();
 
         $inProgress_orders = Order::where('status', 'in-progress')->whereDate('created_at', Carbon::today())->get()->count();
 
@@ -50,9 +50,8 @@ class HomeController extends Controller
         $total_price = Order::whereDate('created_at', Carbon::today())->sum('total_price');
 
         return response()->json([
-            'completed_orders' => $completed_orders,
-            'pending_orders' => $pending_orders,
-            'inProgress_orders' => $inProgress_orders,
+            'completed' => $completed_orders,
+            'in_progress' => $inProgress_orders,
             'comments' => $comments,
             'total_price' => $total_price,
         ]);

@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Feedback;
+use App\Customer;
+
+use Config;
+
 use Illuminate\Http\Request;
 
 class FeedbackController extends Controller
 {
+    public function __construct()
+    {
+         $this->middleware('auth');
+         Config::set('database.connections.mysql2.database', session('db_name'));
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,6 +24,9 @@ class FeedbackController extends Controller
     public function index()
     {
         //
+        $feedbacks = Feedback::with('customer')->latest()->get()->groupBy('customer_id');
+        
+        return view('feedback', compact('feedbacks'));
     }
 
     /**

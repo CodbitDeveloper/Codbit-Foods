@@ -31,3 +31,11 @@ Route::prefix('admin')->group(function(){
     Route::post('/logout', 'Auth\AdminLoginController@logout')->name('admin.logout');
     Route::get('/', 'AdminController@index')->name('admin.dashboard');
 });
+Route::get('/menu', 'ItemController@index')->name('items');
+Route::get('/categories', 'CategoryController@index')->name('categories');
+Route::get('/item/{item}', 'ItemController@viewItem')->name('item.details');
+Route::get('/orders', 'OrderController@index')->name('orders');
+Route::get('/order/{order}', 'OrderController@single')->name('order.details');
+Route::get('/employees', 'UserController@index')->name('employees');
+Route::get('/feedback', 'FeedbackController@index')->name('feedback');
+Route::get('/branches', 'BranchController@index')->name('branches');

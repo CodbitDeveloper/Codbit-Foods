@@ -6,13 +6,13 @@
     <title>Codbit Foods</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="font/iconsmind/style.css" />
-    <link rel="stylesheet" href="font/simple-line-icons/css/simple-line-icons.css" />
+    <link rel="stylesheet" href="{{asset('font/iconsmind/style.css')}}" />
+    
+    <link rel="stylesheet" href="{{asset('font/simple-line-icons/css/simple-line-icons.css')}}" />
 
-    <link rel="stylesheet" href="css/vendor/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/vendor/perfect-scrollbar.css" />
-    <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/dore.light.red.min.css" />
+    <link rel="stylesheet" href="{{asset('css/vendor/bootstrap.min.css')}}" />
+    <link rel="stylesheet" href="{{asset('css/vendor/perfect-scrollbar.css')}}" />
+    <link rel="stylesheet" href="{{asset('css/main.css')}}" />
     <style>
         .round{
             border-radius: 50%;
@@ -129,19 +129,19 @@
             <div class="scroll">
                 <ul class="list-unstyled">
                     <li class="<?php if($page=='dashboard'){echo 'active'; } ?>" >
-                        <a href="#">
+                        <a href="/home">
                             <i class="iconsmind-Home"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li class="<?php if($page=='orders'){echo 'active'; } ?>" >
-                        <a href="#">
+                        <a href="/orders">
                             <i class="iconsmind-Cash-register2"></i>
                             <span>Orders</span>
                         </a>
                     </li>
-                    <li class="<?php if($page=='menu'){echo 'active'; } ?>" >
-                        <a href="#">
+                    <li class="<?php if($page=='items'){echo 'active'; } ?>" >
+                        <a href="/menu">
                             <i class="iconsmind-Hamburger"></i>
                             <span>Menu Items</span>
                         </a>
@@ -152,10 +152,28 @@
                             <span>Categories</span>
                         </a>
                     </li>
+                    <li class="<?php if($page=='employees'){echo 'active'; } ?>" >
+                        <a href="/employees">
+                            <i class="iconsmind-User"></i>
+                            <span>Employees</span>
+                        </a>
+                    </li>
+                    <li class="<?php if($page=='branches'){echo 'active'; } ?>" >
+                        <a href="/branches">
+                            <i class="iconsmind-Shop-2"></i>
+                            <span>Branches</span>
+                        </a>
+                    </li>
                     <li class="<?php if($page=='reports'){echo 'active'; } ?>" >
                         <a href="#">
                             <i class="iconsmind-Pie-Chart3"></i>
                             <span>Reports</span>
+                        </a>
+                    </li>
+                    <li class="<?php if($page=='feedback'){echo 'active'; } ?>" >
+                        <a href="/feedback">
+                            <i class="iconsmind-Envelope"></i>
+                            <span>Customer Feedback</span>
                         </a>
                     </li>
                 </ul>
@@ -166,15 +184,80 @@
         @yield('content')
     </main>
 
-    <script src="js/vendor/jquery-3.3.1.min.js"></script>
-    <script src="js/vendor/bootstrap.bundle.min.js"></script>
-    <script src="js/vendor/perfect-scrollbar.min.js"></script>
-    <script src="js/vendor/mousetrap.min.js"></script>
-    <script src="js/vendor/vue.js"></script>
+    <script src="{{ asset('js/vendor/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ asset('js/vendor/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/vendor/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('js/vendor/mousetrap.min.js') }}"></script>
+    <script src="{{ asset('js/vendor/jquery.barrating.min.js') }}"></script>
     @yield('scripts')
-    <script src="js/dore.script.js"></script>
-    <script src="js/scripts.js"></script>
-    @yield('vueApp')
+    <script src="{{ asset('js/dore.script.js') }}"></script>
+    <script src="{{ asset('js/scripts.js') }}"></script>
+    <script>
+    (function($) {
+        if ($().dropzone) {
+            Dropzone.autoDiscover = false;
+        }
+        
+        var themeColorsDom =
+        '<div class="theme-colors"> <div class="p-4"> <p class="text-muted mb-2">Light Theme</p> <div class="d-flex flex-row justify-content-between mb-4"> <a href="#" data-theme="dore.light.red.min.css" class="theme-color theme-color-red"></a> </div> <p class="text-muted mb-2">Dark Theme</p> <div class="d-flex flex-row justify-content-between"><a href="#" data-theme="dore.dark.red.min.css" class="theme-color theme-color-red"></a> </div> </div> <a href="#" class="theme-button"> <i class="simple-icon-settings"></i> </a> </div>';
+        $("body").append(themeColorsDom);
+        var theme = "dore.light.red.min.css";
+
+        if (typeof Storage !== "undefined") {
+            if (localStorage.getItem("theme")) {
+            theme = localStorage.getItem("theme");
+            }
+        }
+
+        $(".theme-color[data-theme='" + theme + "']").addClass("active");
+        var baseUrl = "{{URL::asset('css/')}}";
+        
+        loadStyle(baseUrl +'/'+ theme , onStyleComplete);
+        function onStyleComplete() {
+            setTimeout(onStyleCompleteDelayed, 300);
+        }
+
+        function onStyleCompleteDelayed() {
+            var $dore = $("body").dore();
+        }
+
+        $("body").on("click", ".theme-color", function(event) {
+            event.preventDefault();
+            var dataTheme = $(this).data("theme");
+            if (typeof Storage !== "undefined") {
+            localStorage.setItem("theme", dataTheme);
+            window.location.reload();
+            }
+        });
+
+
+        $(".theme-button").on("click", function(event) {
+            event.preventDefault();
+            $(this)
+            .parents(".theme-colors")
+            .toggleClass("shown");
+        });
+        $(document).on("click", function(event) {
+            if (
+            !(
+                $(event.target)
+                .parents()
+                .hasClass("theme-colors") ||
+                $(event.target)
+                .parents()
+                .hasClass("theme-button") ||
+                $(event.target).hasClass("theme-button") ||
+                $(event.target).hasClass("theme-colors")
+            )
+            ) {
+            if ($(".theme-colors").hasClass("shown")) {
+                $(".theme-colors").removeClass("shown");
+            }
+            }
+        });
+        })(jQuery);
+    </script>
+    @yield('customjs')
 </body>
 
 </html>

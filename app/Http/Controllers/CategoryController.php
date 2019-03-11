@@ -138,22 +138,23 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'name' => 'required|string',
-            'image' => 'sometimes|image'
+            'name' => 'required|string'
         ]);
 
-        $status = $category->name;
+        $category->name = $request->name;
 
-         if ($request->hasFile('image'))
+         if ($request->hasFile('file'))
          {
-            $fileName = Utils::saveImage($request, 'image', 'images/categories');
-            $status   = $category->update(['image' => $fileName]);
+            $fileName        = Utils::saveImageFromDz($request, 'file', 'img/categories');
+            $category->image = $fileName;
          }
+
+         $status = $category->update();
 
          return response()->json([
             'data' => $category,
-            'status'  => $status,
-            'message' => $status ? 'Category Updated!' : 'Error Updating Category'
+            'error'  => !$status,
+            'message' => $status ? 'Category updated!' : 'Error updating category'
          ]);
     }
 
@@ -172,8 +173,8 @@ class CategoryController extends Controller
         }
 
          return response()->json([
-            'status'  => $status,
-            'message' => $status ? 'Category Deleted!' : 'Error Deleting Category'
+            'error'  => !$status,
+            'message' => $status ? 'Category deleted' : 'The selected category already has items under it.'
          ]);
     }
 

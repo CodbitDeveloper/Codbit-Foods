@@ -111,10 +111,13 @@ class LoginController extends Controller
         }
 
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-            $request->session()->put('restaurant', $restaurant);
 
             $token = JWTAuth::attempt($credentials);
-            
+
+            $request->session()->put('restaurant_name', $restaurant->name);
+            $request->session()->put('restaurant_domain', $restaurant->domain);
+            $request->session()->put('restaurant_logo', $restaurant->logo);
+
             return $this->sendLoginResponse($request);
         }
 
