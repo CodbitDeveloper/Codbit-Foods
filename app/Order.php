@@ -28,9 +28,9 @@ class Order extends Model
         return $this->belongsToMany('App\Item', 'item_order')->withPivot('quantity')->withTimestamps();
     }
 
-    public function paymentTypes()
+    public function paymentType()
     {
-        return $this->hasMany('App\paymentType');
+        return $this->hasOne('App\paymentType');
     }
 
     public function delivery()

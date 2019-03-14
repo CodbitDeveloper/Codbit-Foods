@@ -20,8 +20,8 @@ class paymentType extends Model
         return $this->hasMany(paymentType_Param::class);
     }*/
 
-    public function orders()
+    public function order()
     {
-        return $this->belongsTo('App\Order');
+        return $this->belongsToMany('App\Order');
     }
 }

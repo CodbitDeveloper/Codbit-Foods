@@ -43,3 +43,4 @@ Route::get('/employees', 'UserController@index')->name('employees');
 Route::get('/feedback', 'FeedbackController@index')->name('feedback');
 Route::get('/branches', 'BranchController@index')->name('branches');
 Route::get('/search', 'SettingController@search')->name('search');
+Route::get('/invoice/{order}', 'OrderController@invoice')->name('invoice');

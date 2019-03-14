@@ -238,4 +238,9 @@ class OrderController extends Controller
         $order = Order::with('items', 'customer')->where('id', '=', $order)->first();
         return view('order-details', compact('order'));
     }
+
+    public function invoice($order){
+        $order = Order::with('items', 'customer', 'branch')->where('id', '=', $order)->first();
+        return view('invoice', compact('order'));
+    }
 }
