@@ -42,11 +42,13 @@
                     <div class="row">
                         <div class="col-lg-4 col-12 mb-4">
                             <div class="card mb-4">
+                                @if(strtolower(Auth::user()->role) != 'attendant')
                                 <div class="position-absolute card-top-buttons">
                                     <button class="btn btn-outline-white icon-button" data-toggle="modal" data-target="#editItemModal">
                                         <i class="simple-icon-pencil"></i>
                                     </button>
                                 </div>
+                                @endif
                                 <img src="/img/foods/{{$item->image}}" alt="{{$item->name}}" class="card-img-top" />
 
                                 <div class="card-body">
@@ -147,6 +149,7 @@
                     </div>
                 </div>
             </div>
+            @if(strtolower(Auth::user()->role) != 'attendant')
             <div class="modal fade modal-right" id="editItemModal" role="dialog" aria-labelledby="editItemModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -199,6 +202,7 @@
                                     </div>
                                 </div>
                             </div>
+                    
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
@@ -206,6 +210,7 @@
                         </div>
                         </form>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

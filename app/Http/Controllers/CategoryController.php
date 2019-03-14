@@ -79,6 +79,13 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255'
         ]);
 
+        if(Category::where('name', $request->name)->get()->count() > 0){
+            return response()->json([
+                'error' => true,
+                'message' => 'Category name already exists!'
+            ]);
+        }
+
         $category = new Category();
 
         $category->name = $request->name;

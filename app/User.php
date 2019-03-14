@@ -47,4 +47,8 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo('App\Branch');
     }
     
+    public function responses()
+    {
+        return $this->hasMany(Response::class);
+    }
 }

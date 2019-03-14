@@ -43,8 +43,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        Config::set('database.connections.mysql2.database');
-        $this->middleware('guest')->except('logout', 'userLogout');
+        $this->middleware('guest', ['except' => ['logout', 'userLogout']]);
     }
     
     /**
@@ -74,6 +73,9 @@ class LoginController extends Controller
 
     public function userLogout()
     {
+        if(session('db_name') != null){
+            Config::set('database.connections.mysql2.database', session('db_name'));
+        }
         Auth::guard('web')->logout();
         return redirect('/');
     }

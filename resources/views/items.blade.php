@@ -23,10 +23,12 @@
                 <div class="col-12">
                     <div class="mb-2">
                         <h1>Menu Items</h1>
+                        @if(strtolower(Auth::user()->role) != 'attendant')
                         <div class="float-sm-right">
                             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-backdrop="static"
                                 data-target="#newItemModal">ADD NEW</button>
                         </div>
+                        @endif
                         <nav class="breadcrumb-container d-none d-sm-block d-lg-inline-block" aria-label="breadcrumb">
                             <ol class="breadcrumb pt-0">
                                 <li class="breadcrumb-item">
@@ -51,6 +53,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="form-group row mb-1 float-right">
+                                                @if(strtolower(Auth::user()->role) != 'attendant')
                                                 <div class="col-12">
                                                     <div class="custom-switch custom-switch-primary mb-2" id="switch-{{$item->id}}">
                                                         <input class="custom-switch-input" id="input-{{$item->id}}" type="checkbox"  <?php if($item->active == 1){echo "checked";}?> onclick="toggleActive({{$item->id}})"/>
@@ -58,6 +61,7 @@
                                                     </div>
                                                     <div class="lds-dual-ring" id="loader-{{$item->id}}" style="display:none;"></div>
                                                 </div>
+                                                @endif
                                             </div>
                                             <a href="/item/{{$item->id}}">
                                                 <p class="list-item-heading mb-4">{{$item->name}}</p>
@@ -85,6 +89,7 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+                        @if(strtolower(Auth::user()->role) != 'attendant')
                         <div>
                             <h3 class="mb-4">New Item</h3>
                             <form method="post" action="#" id="new-item-form">
@@ -132,6 +137,7 @@
                                     </div>
                                 </div>
                         </div>
+                        @endif
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>

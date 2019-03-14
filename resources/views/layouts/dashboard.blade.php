@@ -117,7 +117,7 @@
                                      document.getElementById('logout-form').submit();">
                         {{ __('Logout') }}  &nbsp;<i class="simple-icon-logout"></i>
                     </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    <form id="logout-form" action="{{ route('user.logout') }}" method="POST" style="display: none;">
                         @csrf
                     </form>
                 </div>
@@ -146,36 +146,46 @@
                             <span>Menu Items</span>
                         </a>
                     </li>
+                    @if(strtolower(Auth::user()->role) != 'attendant')
                     <li class="<?php if($page=='categories'){echo 'active'; } ?>" >
                         <a href="/categories">
                             <i class="iconsmind-Check"></i>
                             <span>Categories</span>
                         </a>
                     </li>
+                    @endif
+                    @if(strtolower(Auth::user()->role) != 'attendant')
                     <li class="<?php if($page=='employees'){echo 'active'; } ?>" >
                         <a href="/employees">
                             <i class="iconsmind-User"></i>
                             <span>Employees</span>
                         </a>
                     </li>
+                    @endif
+                    @if(strtolower(Auth::user()->role) != 'attendant')
                     <li class="<?php if($page=='branches'){echo 'active'; } ?>" >
                         <a href="/branches">
                             <i class="iconsmind-Shop-2"></i>
                             <span>Branches</span>
                         </a>
                     </li>
+                    @endif
+                    @if(strtolower(Auth::user()->role) != 'attendant')
                     <li class="<?php if($page=='reports'){echo 'active'; } ?>" >
                         <a href="#">
                             <i class="iconsmind-Pie-Chart3"></i>
                             <span>Reports</span>
                         </a>
                     </li>
+                    @endif
+                    @if(strtolower(Auth::user()->role) != 'attendant')
                     <li class="<?php if($page=='feedback'){echo 'active'; } ?>" >
                         <a href="/feedback">
                             <i class="iconsmind-Envelope"></i>
                             <span>Customer Feedback</span>
                         </a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </div>

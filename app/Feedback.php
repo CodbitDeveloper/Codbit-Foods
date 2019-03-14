@@ -19,4 +19,9 @@ class Feedback extends Model
     {
         return $this->belongsTo('App\Customer');
     }
+
+    public function responses()
+    {
+        return $this->hasMany(Response::class);
+    }
 }

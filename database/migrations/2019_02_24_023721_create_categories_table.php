@@ -15,7 +15,7 @@ class CreateCategoriesTable extends Migration
     {
         Schema::connection('mysql2')->create('categories', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->unique();
+            $table->string('name');
             $table->string('image');
             $table->timestamps();
             $table->softDeletes();

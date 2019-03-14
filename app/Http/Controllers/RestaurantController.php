@@ -4,14 +4,22 @@ namespace App\Http\Controllers;
 
 use DB;
 use Config;
+
 use App\User;
 use App\Branch;
 use App\Restaurant;
+
+use App\Utils;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
 class RestaurantController extends Controller
 {
+    public function __construct()
+    {
+        //$this->middleware('admin');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -19,9 +27,9 @@ class RestaurantController extends Controller
      */
     public function index()
     {
-        $restaurant = Restaurant::all();
+        $restaurants = Restaurant::all();
 
-        return view('admin.restaurants', compact('restaurant'));
+        return view('admin.dashboard', compact('restaurants'));
     }
 
     /**
@@ -31,9 +39,9 @@ class RestaurantController extends Controller
      */
     public function create()
     {
-        $restaurant = new Restaurant;
+        $restaurant = new Restaurant();
 
-        return view('admin.restaurant_create', compact('restaurant'));
+        return view('admin.add-restaurant', compact('restaurant'));
     }
 
     /**
@@ -48,18 +56,17 @@ class RestaurantController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email',
-            'contact_number' => 'required',
-            'logo' => 'required'
+            'contact_number' => 'required'
         ]);
 
-        $restaurant = new Restaurant;
+        $restaurant = new Restaurant();
 
         $restaurant->name = $request->name;
         $restaurant->email = $request->email;
         $restaurant->website = $request->website;
         $restaurant->contact_number = $request->contact_number;
-        if($request->hasFile('image')){
-            $fileName = Utils::saveImage($request, 'image', 'image/logo');
+        if($request->hasFile('file')){
+            $fileName = Utils::saveImageFromDz($request, 'file', 'img/logo');
             $restaurant->logo = $fileName;
         }else{
             $restaurant->logo = $request->logo;
@@ -82,7 +89,15 @@ class RestaurantController extends Controller
             'id' => 'required',
             'DB_name' => 'required',
             'DB_username' => 'required',
-            'DB_password' => 'required'
+            'DB_password' => 'required',
+            'branch_name' => 'required',
+            'branch_location' => 'required',
+            'branch_phone_number' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'gender' => 'required',
+            'username' => 'required',
+            'phone' => 'required'
         ]);
 
 
@@ -289,6 +304,15 @@ class RestaurantController extends Controller
                 `updated_at` timestamp NULL DEFAULT NULL,
                 `deleted_at` timestamp NULL DEFAULT NULL
             );
+            CREATE TABLE `responses` (
+                `id` int(10) UNSIGNED NOT NULL,
+                `user_id` int(10) UNSIGNED NOT NULL,
+                `feedback_id` int(10) UNSIGNED NOT NULL,
+                `response` text COLLATE utf8mb4_unicode_ci NOT NULL,
+                `created_at` timestamp NULL DEFAULT NULL,
+                `updated_at` timestamp NULL DEFAULT NULL,
+                `deleted_at` timestamp NULL DEFAULT NULL
+            );
             CREATE TABLE `settings` (
                 `id` int(10) UNSIGNED NOT NULL,
                 `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -324,8 +348,7 @@ class RestaurantController extends Controller
             ADD PRIMARY KEY (`id`);
 
             ALTER TABLE `categories`
-            ADD PRIMARY KEY (`id`),
-            ADD UNIQUE KEY `categories_name_unique` (`name`);
+            ADD PRIMARY KEY (`id`);
 
             ALTER TABLE `checkouts`
             ADD PRIMARY KEY (`id`),
@@ -394,6 +417,11 @@ class RestaurantController extends Controller
             ALTER TABLE `promos`
             ADD PRIMARY KEY (`id`);
 
+            ALTER TABLE `responses`
+            ADD PRIMARY KEY (`id`),
+            ADD KEY `responses_user_id_foreign` (`user_id`),
+            ADD KEY `responses_feedback_id_foreign` (`feedback_id`);
+
             ALTER TABLE `settings`
             ADD PRIMARY KEY (`id`),
             ADD UNIQUE KEY `settings_name_unique` (`name`),
@@ -449,6 +477,9 @@ class RestaurantController extends Controller
             ALTER TABLE `promos`
             MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
+            ALTER TABLE `responses`
+            MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
             ALTER TABLE `settings`
             MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
@@ -494,6 +525,10 @@ class RestaurantController extends Controller
             ADD CONSTRAINT `orders_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `orders_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `orders_payment_type_id_foreign` FOREIGN KEY (`payment_type_id`) REFERENCES `payment_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+            ALTER TABLE `responses`
+            ADD CONSTRAINT `responses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `responses_feedback_id_foreign` FOREIGN KEY (`feedback_id`) REFERENCES `feedback` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `users`
             ADD CONSTRAINT `users_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
