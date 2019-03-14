@@ -26,4 +26,9 @@ class Branch extends Model
     {
         return $this->hasMany('App\Order');
     }
+
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
+    }
 }

@@ -204,6 +204,7 @@ class RestaurantController extends Controller
             CREATE TABLE `feedback` (
                 `id` int(10) UNSIGNED NOT NULL,
                 `suggestion` text COLLATE utf8mb4_unicode_ci NOT NULL,
+                `branch_id` int(10) UNSIGNED NOT NULL,
                 `customer_id` int(10) UNSIGNED NOT NULL,
                 `created_at` timestamp NULL DEFAULT NULL,
                 `updated_at` timestamp NULL DEFAULT NULL,
@@ -379,6 +380,7 @@ class RestaurantController extends Controller
 
             ALTER TABLE `feedback`
             ADD PRIMARY KEY (`id`),
+            ADD KEY `feedback_branch_id_foreign` (`branch_id`),
             ADD KEY `feedback_customer_id_foreign` (`customer_id`);
 
             ALTER TABLE `images`
@@ -502,6 +504,7 @@ class RestaurantController extends Controller
             ADD CONSTRAINT `deliveries_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `feedback`
+            ADD CONSTRAINT `feedback_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `feedback_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `images`

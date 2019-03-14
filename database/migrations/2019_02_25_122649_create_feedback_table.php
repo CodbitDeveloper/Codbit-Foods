@@ -17,11 +17,14 @@ class CreateFeedbackTable extends Migration
             $table->increments('id');
             $table->text('suggestion');
             $table->integer('customer_id')->unsigned();
+            $table->unsignedInteger('branch_id');
             $table->timestamps();
             $table->integer('ratings');
             $table->softDeletes();
 
             $table->foreign('customer_id')->references('id')->on('customers')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('branch_id')->references('id')->on('branches')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }
