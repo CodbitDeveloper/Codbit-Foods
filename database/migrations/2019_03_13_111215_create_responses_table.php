@@ -13,10 +13,10 @@ class CreateResponsesTable extends Migration
      */
     public function up()
     {
-        Schema::create('responses', function (Blueprint $table) {
+        Schema::connection('mysql2')->create('responses', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('user_id');
-            $table->unsignedInteger('feedback_id');
+            $table->integer('user_id')->unsigned();
+            $table->integer('feedback_id')->unsigned();
             $table->text('response');
             $table->timestamps();
             $table->softDeletes();
@@ -35,6 +35,6 @@ class CreateResponsesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('responses');
+        Schema::connection('mysql2')->dropIfExists('responses');
     }
 }

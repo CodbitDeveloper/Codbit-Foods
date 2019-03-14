@@ -31,6 +31,7 @@ Route::middleware('admin')->prefix('admin')->group(function(){
     Route::get('/', 'RestaurantController@index')->name('admin.dashboard');
     Route::get('/restaurants/add', 'RestaurantController@create')->name('admin.restaurants.add');
 });
+
 Route::get('/admin/login', 'Auth\AdminLoginController@showLoginForm')->name('admin.login');
 Route::post('/admin/login', 'Auth\AdminLoginController@login')->name('admin.login.submit');
 
@@ -44,3 +45,4 @@ Route::get('/feedback', 'FeedbackController@index')->name('feedback');
 Route::get('/branches', 'BranchController@index')->name('branches');
 Route::get('/search', 'SettingController@search')->name('search');
 Route::get('/invoice/{order}', 'OrderController@invoice')->name('invoice');
+Route::get('/reports', 'SettingController@reports')->name('reports');

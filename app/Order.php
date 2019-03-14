@@ -12,7 +12,7 @@ class Order extends Model
     protected $connection = 'mysql2';
 
     protected $fillable = [
-        'customer_id', 'paymentType_id', 'status', 'total_price', 'address', 'extra_note'
+        'customer_id', 'payment_type_id', 'status', 'total_price', 'address', 'extra_note'
     ];
 
     protected $table = "orders";
@@ -30,7 +30,11 @@ class Order extends Model
 
     public function paymentType()
     {
+<<<<<<< HEAD
         return $this->hasOne('App\paymentType');
+=======
+        return $this->belongsTo('App\paymentType', 'payment_type_id');
+>>>>>>> 08e9854bc3ac573df523918dfe10fa6570d14831
     }
 
     public function delivery()

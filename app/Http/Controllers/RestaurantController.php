@@ -18,7 +18,7 @@ class RestaurantController extends Controller
 {
     public function __construct()
     {
-        //$this->middleware('admin');
+        $this->middleware('admin');
     }
     /**
      * Display a listing of the resource.
@@ -204,8 +204,8 @@ class RestaurantController extends Controller
             CREATE TABLE `feedback` (
                 `id` int(10) UNSIGNED NOT NULL,
                 `suggestion` text COLLATE utf8mb4_unicode_ci NOT NULL,
-                `branch_id` int(10) UNSIGNED NOT NULL,
                 `customer_id` int(10) UNSIGNED NOT NULL,
+                `branch_id` int(10) UNSIGNED NOT NULL,
                 `created_at` timestamp NULL DEFAULT NULL,
                 `updated_at` timestamp NULL DEFAULT NULL,
                 `ratings` int(11) NOT NULL,
@@ -268,7 +268,7 @@ class RestaurantController extends Controller
                 `created_at` timestamp NULL DEFAULT NULL,
                 `updated_at` timestamp NULL DEFAULT NULL,
                 `deleted_at` timestamp NULL DEFAULT NULL
-            );
+            ); 
             CREATE TABLE `payment_types` (
                 `id` int(10) UNSIGNED NOT NULL,
                 `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -278,9 +278,9 @@ class RestaurantController extends Controller
                 `deleted_at` timestamp NULL DEFAULT NULL
             );
             INSERT INTO `payment_types` (`id`, `name`, `active`, `created_at`, `updated_at`, `deleted_at`) VALUES
-            (4, 'Mobile Money', '1', NULL, NULL, NULL),
-            (5, 'Card', '1', NULL, NULL, NULL),
-            (6, 'Cash', '1', NULL, NULL, NULL); 
+            (1, 'Mobile Money', '1', NULL, NULL, NULL),
+            (2, 'Card', '1', NULL, NULL, NULL),
+            (3, 'Cash', '1', NULL, NULL, NULL); 
             CREATE TABLE `phone_numbers` (
                 `id` int(10) UNSIGNED NOT NULL,
                 `phone_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -363,10 +363,10 @@ class RestaurantController extends Controller
             ALTER TABLE `customers`
             ADD PRIMARY KEY (`id`),
             ADD UNIQUE KEY `customers_email_unique` (`email`);
-            
+
             ALTER TABLE `customer_promo`
             ADD PRIMARY KEY (`promo_id`,`customer_id`),
-            ADD KEY `promo_customer_customer_id_foreign` (`customer_id`);
+            ADD KEY `customer_promo_customer_id_foreign` (`customer_id`);
 
             ALTER TABLE `deals`
             ADD PRIMARY KEY (`id`);
@@ -380,8 +380,8 @@ class RestaurantController extends Controller
 
             ALTER TABLE `feedback`
             ADD PRIMARY KEY (`id`),
-            ADD KEY `feedback_branch_id_foreign` (`branch_id`),
-            ADD KEY `feedback_customer_id_foreign` (`customer_id`);
+            ADD KEY `feedback_customer_id_foreign` (`customer_id`),
+            ADD KEY `feedback_branch_id_foreign` (`branch_id`);
 
             ALTER TABLE `images`
             ADD PRIMARY KEY (`id`),
@@ -492,12 +492,12 @@ class RestaurantController extends Controller
             ADD CONSTRAINT `checkouts_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `comments`
-            ADD CONSTRAINT `comments_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-            ADD CONSTRAINT `comments_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-            
+            ADD CONSTRAINT `comments_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `comments_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
             ALTER TABLE `customer_promo`
-            ADD CONSTRAINT `promo_customer_promo_id_foreign` FOREIGN KEY (`promo_id`) REFERENCES `promos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-            ADD CONSTRAINT `promo_customer_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+            ADD CONSTRAINT `customer_promo_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `customer_promo_promo_id_foreign` FOREIGN KEY (`promo_id`) REFERENCES `promos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `deliveries`
             ADD CONSTRAINT `deliveries_dispatch_id_foreign` FOREIGN KEY (`dispatch_id`) REFERENCES `dispatches` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -530,8 +530,8 @@ class RestaurantController extends Controller
             ADD CONSTRAINT `orders_payment_type_id_foreign` FOREIGN KEY (`payment_type_id`) REFERENCES `payment_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `responses`
-            ADD CONSTRAINT `responses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-            ADD CONSTRAINT `responses_feedback_id_foreign` FOREIGN KEY (`feedback_id`) REFERENCES `feedback` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+            ADD CONSTRAINT `responses_feedback_id_foreign` FOREIGN KEY (`feedback_id`) REFERENCES `feedback` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `responses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `users`
             ADD CONSTRAINT `users_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
