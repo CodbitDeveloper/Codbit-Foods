@@ -167,20 +167,22 @@ class ItemController extends Controller
        */
       public function update (Request $request, Item $item)
       {
-         $status = $item->update(
-            $request->only(['name', 'description', 'price', 'category_id'])
-         );
+         $item->name = $request->name;
+         $item->description = $request->description;
+         $item->price = $request->price;
+         $item->category_id = $request->category_id;
 
-         if($request->hasFile('image'))
+         if($request->hasFile('file'))
          {
-            $fileName = Utils::saveImage($request, 'image', 'images/foods');
-            $status = $item->update(['image' => $fileName]);
+            $fileName = Utils::saveImageFromDz($request, 'file', 'img/foods');
+            $item->image = $fileName;
          }
 
+         $status = $item->update();
          return response()->json([
             'data' => $item,
-            'status'  => $status,
-            'message' => $status ? 'Item Updated!' : 'Error Updating Item'
+            'error'  => !$status,
+            'message' => $status ? 'Item updated!' : 'Error updating item'
          ]);
       }
 

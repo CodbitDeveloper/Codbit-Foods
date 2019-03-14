@@ -176,21 +176,21 @@
                                     <div class="form-row">
                                         <input name="id" type="hidden" value="{{$item->id}}"/>
                                         <label class="form-group has-float-label col-12">
-                                            <input class="form-control" value="{{$item->name}}"/>
+                                            <input class="form-control" name="name" value="{{$item->name}}"/>
                                             <span>Item Name</span>
                                         </label>
                                     </div>
                                     <div class="form-row">
                                         <label class="form-group has-float-label col-12">
-                                            <input class="form-control" type="number" value="{{$item->price}}"/>
+                                            <input class="form-control" type="number" name="price" value="{{$item->price}}"/>
                                             <span>Item Price</span>
                                         </label>
                                     </div>
                                     <div class="form-row">
                                         <label class="form-group has-float-label col-12">
-                                            <select class="form-control select2-single col-12">
+                                            <select class="form-control select2-single col-12" name="category_id">
                                                 @foreach($categories as $category)
-                                                    <option value="{{$category->id}}">{{$category->name}}</option>
+                                                    <option value="{{$category->id}}" <?php if($category->id == $item->category_id){echo 'selected';} ?>>{{$category->name}}</option>
                                                 @endforeach
                                             </select>
                                             <span>Category</span>
@@ -198,7 +198,7 @@
                                     </div>
                                     <div class="form-row">
                                         <label class="form-group has-float-label col-12">
-                                            <textarea class="form-control" rows="4">{{$item->description}}</textarea>
+                                            <textarea class="form-control" rows="4" name = "description">{{$item->description}}</textarea>
                                             <span>Description</span>
                                         </label>
                                     </div>
@@ -229,12 +229,12 @@
         Dropzone.autoDiscover = false;
 
         $('#item-image').dropzone({
-                method: 'put',
-                url: '/api/items/update',
+                method: 'POST',
+                url: '/api/items/update/'+{{$item->id}},
                 autoProcessQueue: false,
-                uploadMultiple: false,
-                parallelUploads: 5,
-                maxFiles: 5,
+                uploadMultiple: true,
+                parallelUploads: 1,
+                maxFiles: 1,
                 maxFilesize: 1,
                 acceptedFiles: 'image/*',
                 thumbnailWidth: 160,
@@ -247,17 +247,25 @@
                     $("#submit-edit").on("click", function(e) {
                         // Make sure that the form isn't actually being sent.
                         e.preventDefault();
-                        dzClosure2.options.url += "/"+$('#edit-cat-id').val();
                         $('#submit-edit').html('<div class="lds-dual-ring-white"></div>');
-                        if (dzClosure2.getQueuedFiles().length > 0) {         
-                            dzClosure2.options.method = "POST";               
+                        if (dzClosure2.getQueuedFiles().length > 0) {                    
                             dzClosure2.processQueue();  
                         } else {                       
-                             //ajax request to update item without image 
+                             //ajax request to update item without image
+                             var postData = 'manner=edit';
+                             $('#edit-item input').each(function(){
+                                el = $(this);
+
+                                postData = postData + '&' + el.attr('name') + '=' + el.val();
+                             });
+
+                             postData = postData + '&description=' + $('#edit-item textarea').val();
+                             postData = postData + '&category_id=' + $('#edit-item select').val();
+
                              $.ajax({
-                                 url : dzClosure2.options.url,
+                                 url : '/api/items/update/'+{{$item->id}},
                                  method: 'post',
-                                 data: 'name='+$('#edit-cat-name').val(),
+                                 data: postData,
                                  success: function(data, status, xhr){
                                     $('#submit-edit').html('Save');
                                     $('#submit-edit').prop('disabled', false);
@@ -279,10 +287,6 @@
                                             type: 'success'
                                         });
 
-                                        
-                                        setTimeout(function(){
-                                            location.reload();
-                                        }, 500);
                                     }
 
                                     
@@ -308,9 +312,14 @@
                     });
 
                     
-                    this.on("sending", function(file, xhr, frmData) {
-                        alert(JSON.stringify(frmData));
-                        frmData.append("name", $("#edit-cat-name").val());
+                    this.on("sending", function(file, xhr, formData) {
+                        $('#edit-item input').each(function(){
+                            el = $(this);
+                            formData.append(el.attr('name'), el.val())
+                         });
+
+                       formData.append('description', $('#edit-item textarea').val());
+                       formData.append('category_id', $('#edit-item select').val());
                     });
 
 
@@ -339,13 +348,7 @@
                                 // settings
                                 type: 'success'
                             });
-
-                            setTimeout(function(){
-                                location.reload();
-                            }, 500);
-
-                            dzClosure.removeAllFiles();
-                            $("#edit-category-form").trigger('reset');
+                            $('.card-img-top').attr('src', '/img/foods/'+data.data.image);
                         }
                     });
 
