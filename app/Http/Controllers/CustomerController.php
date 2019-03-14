@@ -3,48 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Item;
+use App\Category;
+use App\Order;
+use App\PaymentType;
+use App\Branch;
+use App\Setting;
+use App\Restaurant;
+
+use Config;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
+
+         public function __construct(Request $request)
+         {
+            if(session('db_name')!=null){
+               Config::set('database.connections.mysql2.database', session('db_name')); 
+            }else if($request->restaurant != null){
+               $restaurant_id = $request->restaurant;
+               $restaurant = Restaurant::where('id', $restaurant_id)->first();
+               if($restaurant!=null){
+                  Config::set('database.connections.mysql2.database', $restaurant->DB_name);
+               }       
+            }
+         }
    /**
        * Display a listing of the resource.
        *
        * @return \Illuminate\Http\Response
        */
-      public function index ()
-      {
-         //return response()->json(Customer::with(['orders'])->get());
-         $customers = Customer::all();
-
-         return response()->json([
-            'data' => $customers,
-            'message' =>'success'
-            ], 200);
-      }
-
-      
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $customer = new Customer();
-
-        return view('customers.create', compact('customer'));
-    }
-
-      /**
-       * Store a newly created resource in storage.
-       *
-       * @param  \Illuminate\Http\Request $request
-       *
-       * @return \Illuminate\Http\Response
-       */
-
       public function store (Request $request)
       {
          $request->validate([
@@ -54,7 +45,6 @@ class CustomerController extends Controller
          ]);
 
          $customer = new Customer();
-         $customer->setConnection('mysql2');
 
          $customer->name  = $request->name;
          $customer->email = $request->email;
@@ -113,208 +103,247 @@ class CustomerController extends Controller
          //
       }
 
-      /**
-       * Check if the access code is valid
-       */
-      public function checkCode (Request $request)
-      {
-         $request->validate([
-            'phone' => 'required|string',
-            'code'  => 'required|string'
-         ]);
-
-         $customer = Customer::where('phone', '=', $request->phone)->first();
-         //var_dump($customer);
-         if ($customer != null)
-         {
-            if ($customer->password == $request->code)
-            {
-               return response()->json([
-                  'error'   => false,
-                  'message' => "User verification successful"
-               ]);
-            }
-            else
-            {
-               return response()->json([
-                  'error'   => true,
-                  'message' => "Wrong password entered"
-               ]);
-            }
-         }
-         else
-         {
+      public function fetchAllItems(Request $request){
+         
+         if($request->restaurant == null){
             return response()->json([
-               'error'   => true,
-               'message' => "No user with specified phone number"
+               'error' => true,
+               'message' => 'Unknown restaurant'
             ]);
          }
 
+         $items = Category::with('items')->whereHas('items', function($q){
+            $q->where('active', '=', 1);
+         })->get();
+         
+         return response()->json([
+            'error' => false,
+            'items' => $items
+         ]);
       }
 
-      /**
-       * Login with facebook
-       */
-      public function facebookLogin (Request $request)
-      {
+      public function handleLogin(Request $request){
          $request->validate([
-            'first_name' => 'required|string',
-            'last_name'  => 'required|string',
-            'email'      => 'required|string',
-            'phone'      => 'required|string'
+            'phone' => 'required'
          ]);
 
-         if ($request->phone == "")
-         {
-            $request->phone = null;
-         }
-
-         $fname = $request->first_name;
-         $lname = $request->last_name;
-         $email = $request->email;
-         $phone = $request->phone;
-
-         DB::insert("INSERT IGNORE INTO customers(firstname, lastname, email, phone) VALUES (?, ?, ?, ?)", [$fname, $lname, $email, $phone]);
-
-         $customer = Customer::where('email', '=', $request->email)->first();
-
-         if ($customer != null)
-         {
+         $user = Customer::where('phone', '=', $request->phone)->first();
+         
+         if($user != null){
             return response()->json([
-               "error" => true,
-               "user"  => $customer
+               'error' => false,
+               'newUser' => false,
+               'user' => $user
             ]);
-         }
-         else
-         {
-            return response()->json([
-               "error"   => true,
-               "message" => "No user with specified email"
-            ]);
+         }else{
+            $user = new Customer();
+            $user->phone = $request->phone;
+            $user->firstname = '';
+            $user->lastname = '';
+            $user->token = '';
+            $user->password = '';
+            if($user->save()){
+               return response()->json([
+                  'error' => false,
+                  'newUser' => true,
+                  'id' => $user->id
+               ]);
+            }else{
+               return response()->json([
+                  'error' => true
+               ]);
+            }
          }
       }
 
-      /**
-       * Login with phone number
-       */
-      public function phoneLogin (Request $request)
-      {
+      public function updateProfile(Request $request){
          $request->validate([
-            'phone' => 'required|string'
+            'id' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'email' => 'required'
          ]);
 
-         $customer = Customer::where('phone', '=', $request->phone)->first();
+         $customer = Customer::where('id', '=', $request->id)->first();
 
-         if ($customer != null)
-         {
-            $digits             = 4;
-            $random_code        = str_pad(rand(0, pow(10, $digits) - 1), $digits, '0', STR_PAD_LEFT);
-            $customer->password = $random_code;
+         $customer->firstname = $request->firstname;
+         $customer->lastname = $request->lastname;
+         $customer->email = $request->email;
 
-            if ($customer->update())
-            {
-               //SMS logic comes in here
-               return response()->json([
-                  "error"   => false,
-                  "message" => "Verification code has been sent "
-               ]);
-            }
-            else
-            {
-               return response()->json([
-                  "error"   => true,
-                  "message" => "Could not save code"
-               ]);
-            }
-         }
-         else
-         {
+         if($customer->update()){
             return response()->json([
-               "error"   => true,
-               "message" => "No user with specified phone number"
+               'error' => false,
+               'message' => 'Profile updated'
+            ]);
+         }else{
+            return response()->json([
+               'error' => false,
+               'message' => 'Could not update profile'
             ]);
          }
       }
 
-      /**
-       * Save the user FCM token
-       */
-      public function saveFCM (Request $request)
-      {
+      public function getOrders(Request $request){
          $request->validate([
-            'phone' => 'required|string',
-            'token' => 'required|string'
+            'customer' => 'required'
          ]);
 
-         $customer = Customer::where('phone', '=', $request->phone)->first();
+         $orders = Order::with('items')->where('customer_id', '=', $request->customer)->orderBy('created_at', 'desc')->get();
 
-         $customer->token = $request->token;
-         if ($customer->update())
-         {
+         return response()->json([
+            'orders' => $orders
+         ]);
+      }
+
+      public function saveOrder(Request $request){
+         $request->validate([
+            'customer' => 'required',
+            'to_be_delivered' => 'required',
+            'address' => 'required',
+            'total' => 'required',
+            'payment_type' => 'required',
+            'items' => 'required',
+            'branch' => 'required'
+         ]);
+
+         $items = json_decode($request->items);
+         
+         $order = new Order;
+
+         $order->customer_id = $request->customer;
+         $order->to_be_delivered = $request->to_be_delivered;
+         $order->address = $request->address;
+         $order->total_price = $request->total;
+         $order->payment_type_id = $request->payment_type;
+         $order->branch_id = $request->branch;
+         
+         $payment_type = PaymentType::where('id', '=', $order->payment_type_id)->first();
+         
+         if($order->save()){
+            foreach($items as $item){
+               $id = $item->item->id;
+               $quantity = $item->quantity;
+               DB::connection('mysql2')->insert("INSERT INTO item_order(item_id, order_id, quantity) VALUES (?, ?, ?)", [$id, $order->id, $quantity]);
+            }
             return response()->json([
-               "error"   => false,
-               "message" => "FCM token saved"
-            ]);
+               'error' => false,
+               'message' => 'Order saved',
+               'order' => $order->id,
+               'should_checkout' => $payment_type->name != 'Cash' ? true : false
+           ]);
+         }else{
+            return response()->json([
+               'error' => true,
+               'message' => 'Could not save the order'
+           ]);
          }
-         else
-         {
+      }
+
+      public function getOptions(Request $request){
+         $payment_types = PaymentType::all();
+         $branches = Branch::all();
+
+         return response()->json([
+            'error' => false,
+            'payment_types' => $payment_types,
+            'branches' => $branches,
+         ]);
+      }
+
+      public function initializePayment(Request $request){
+         $request->validate([
+            'order' => 'required'
+         ]);
+
+         $order = Order::with('items')->where('id', '=', $request->order)->first();
+         $items = array();
+         
+         foreach($order->items as $single){
+            $temp = array(
+               "name" => $single->name,
+               "quantity" => $single->pivot->quantity,
+               "unitPrice" => $single->price
+            );
+            array_push($items, $temp);
+         }
+         $url = "https://api.hubtel.com/v2/pos/onlinecheckout/items/initiate";
+         $user = 'gPEwQng';
+         $key = 'a62e4cda-261f-4bd7-9494-b4f968dad024';
+         $basic_auth_key =  'Basic ' . base64_encode($user . ':' . $key);
+
+         $fields = array("items" => $items, "totalAmount" => $order->total_price, "description" => "Codbit Foods Checkout", 
+           "callbackUrl" => "http://localhost:8000/api/customer/checkout-response", "returnUrl" => "http://hubtel.com/online", "merchantBusinessLogoUrl" => "http://codbitgh.com/wp-content/uploads/2018/11/CODBIT-LOGO.png", "merchantAccountNumber" => "HM1701190002",
+           "cancellationUrl" => "http://hubtel.com/online", "clientReference" => "CBFD-".$order->id.'-'.rand(0, 100));
+
+         $ch = curl_init();
+
+         curl_setopt($ch, CURLOPT_URL, $url);
+         curl_setopt($ch, CURLOPT_POST, 1);
+
+         //Adding post variables to the request
+         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+
+         //So that curl_exec returns the contents of the cURL; rather than echoing it
+         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+         curl_setopt( $ch, CURLOPT_HTTPHEADER, array(
+                     'Authorization: '.$basic_auth_key,
+                     'Cache-Control: no-cache',
+                     'Content-Type: application/json',
+                     ));
+         //execute post
+         $result = curl_exec($ch);
+
+         //checking if curl returns an error 
+         if($result === false){
+            echo "cURL error: " . curl_error($ch);
+         }
+
+         //close curl and free up the handle
+         curl_close($ch);
+
+         //display raw output
+         $result = json_decode($result, true);
+         if($result['status'] == 'Success'){
             return response()->json([
-               "error"   => true,
-               "message" => "Could not save token"
+               'error' => false,
+               'data' => $result['data']
+            ]);
+         }else{
+            return response()->json([
+               'error' => true,
+               'message' => 'Could not initiate checkout. Try again'
             ]);
          }
       }
 
+      public function handleCallback(Request $request){
+         return response()->json([
+            'request' => $request
+         ]);
+      }
 
-      /**
-       *Save a new user with details
-       */
-      public function saveUser (Request $request)
-      {
+      public function handleSearch(Request $request){
          $request->validate([
-            'firstname' => 'required|string',
-            'lastname'  => 'required|string',
-            'email'     => 'required|string',
-            'phone'     => 'required|string'
+            'term' => 'required'
          ]);
 
-         if (count(Customer::where("phone", "=", $request->phone)->first()) > 0)
-         {
-            return response()->json([
-               "error"   => true,
-               "message" => "Phone number has already been used for a previous registration."
-            ]);
-         }
-         else if (count(Customer::where("email", "=", $request->email)->first()) > 0)
-         {
-            return response()->json([
-               "error"   => true,
-               "message" => "Email has already been used for a previous registration."
-            ]);
-         }
-         else
-         {
-            $customer            = new Customer();
-            $customer->firstname = $request->firstname;
-            $customer->lastname  = $request->lastname;
-            $customer->email     = $request->email;
-            $customer->phone     = $request->phone;
+         $term = strtolower(str_replace('%', '\\%', $request->term));
 
-            if ($customer->save())
-            {
-               return response()->json([
-                  "error"   => false,
-                  "message" => "User saved."
-               ]);
-            }
-            else
-            {
-               return response()->json([
-                  "error"   => true,
-                  "message" => "Could not save user."
-               ]);
-            }
-         }
+         $items = DB::table('items')->where('name', 'like', '%'.$term.'%')->get();
+
+         return response()->json([
+            'error' => false,
+            'results' => $items
+         ]);
+      }
+
+      public function getRestaurantDetails(Request $request){
+            $settings = Setting::first();
+
+            return response()->json([
+               'error' => false,
+               'settings' => $settings
+            ]);
       }
 
 }

@@ -1,10 +1,3 @@
-/* Dore Theme Select & Initializer Script 
-
-Table of Contents
-
-01. Avatar
-*/
-
 (function(w, d){
 
 
@@ -108,7 +101,3 @@ function loadStyle(href, callback) {
   }
   head.appendChild(link);
 }
-/* 02. Theme Selector And Initializer */
-
-
-

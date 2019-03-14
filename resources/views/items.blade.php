@@ -44,7 +44,7 @@
                             <div class="card">
                                 <div class="position-relative">
                                     <a href="/item/{{$item->id}}"><img class="card-img-top <?php if($item->active == 0){echo 'img-inactive';}?>" src="/img/foods/{{$item->image}}" alt="{{$item->name}}" id="img-{{$item->id}}"></a>
-                                    <a href="#" class="badge badge-pill badge-theme-1 position-absolute badge-top-left cursor">EDIT</a>
+                                    <a href="#" class="badge badge-pill badge-theme-1 position-absolute badge-top-left cursor">GHS {{$item->price}}</a>
                                     <span class="badge badge-pill badge-secondary position-absolute badge-top-left-2 text-uppercase">{{$item->category->name}}</span>
                                 </div>
                                 <div class="card-body">

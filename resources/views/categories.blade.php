@@ -156,7 +156,7 @@
                                     </label>
                                 </div>
                                 <div class="form-row">
-                                <div class="col-12 dropzone" id="myDropzone2"></div>
+                                    <div class="col-12 dropzone" id="myDropzone2"></div>
                                 </div>
                             </div>
                         </div>

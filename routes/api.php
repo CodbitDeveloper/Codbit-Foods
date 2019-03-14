@@ -35,6 +35,7 @@ Route::delete('/categories/delete/{category}', 'CategoryController@destroy')->na
 
 Route::put('/items/activate/{item}', 'ItemController@toggleActive')->name('items.activate');
 Route::post('/items/add', 'ItemController@store')->name('items.add');
+Route::post('/items/update/{item}', 'ItemController@update')->name('items.update');
 
 Route::post('/orders/add', 'OrderController@store')->name('orders.add');
 Route::put('/order/update-status', 'OrderController@updateStatus')->name('order.update-status');
@@ -42,3 +43,20 @@ Route::put('/order/update-status', 'OrderController@updateStatus')->name('order.
 
 Route::post('/user/add', 'UserController@store')->name('user.add');
 Route::put('/user/edit', 'UserController@update')->name('user.edit');
+
+Route::post('/branches/add', 'BranchController@store')->name('branch.add');
+
+Route::prefix('customer')->middleware('cors')->group(function(){
+    Route::get('/items', 'CustomerController@fetchAllItems');
+    Route::post('/login', 'CustomerController@handleLogin');
+    Route::post('/update', 'CustomerController@updateProfile');
+    Route::get('/orders', 'CustomerController@getOrders');
+    Route::get('/order-options', 'CustomerController@getOptions');
+    Route::post('/order', 'CustomerController@saveOrder');
+    Route::post('/checkout', 'CustomerController@initializePayment');
+    Route::post('/checkout-response', 'CustomerController@handleCallback');
+    Route::get('/search', 'CustomerController@handleSearch');
+    Route::get('/restaurant', 'CustomerController@getRestaurantDetails');
+    Route::get('/change-conn', 'CustomerController@changeConnection');
+    Route::get('/test-conn', 'CustomerController@testConnection');
+});

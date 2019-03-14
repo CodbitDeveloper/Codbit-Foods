@@ -66,7 +66,7 @@
                             </button>
                         </div>
                         <div>
-                            <h3 class="mb-4">New Employee</h3>
+                            <h3 class="mb-4">New <b class="text-primary">Employee</b></h3>
                             <div class="col-12">
                                 <div class="form-row">
                                     <label class="form-group has-float-label col-lg-6 col-sm-12">
@@ -111,8 +111,7 @@
                                 <div class="form-row">
                                     <div class="input-group mb-3">
                                         <label class="has-float-label">
-                                            <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username"
-                                                    aria-describedby="username" name="username" required>
+                                            <input type="text" class="form-control" aria-describedby="username" name="username" required>
                                             <span>Username</span>
                                         </label>
                                         <div class="input-group-append bg-primary">
@@ -135,7 +134,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><b>Cancel</b></button>
                         <button type="submit" class="btn btn-primary" id="submit-all"><b>Save</b></button>
                     </div>
                 </div>

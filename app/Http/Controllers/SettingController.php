@@ -3,10 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Setting;
+use App\Item;
+use App\Category;
+
 use Illuminate\Http\Request;
+
+use Config;
+use Auth;
 
 class SettingController extends Controller
 {
+    public function __construct()
+    {
+         $this->middleware('auth');
+         Config::set('database.connections.mysql2.database', session('db_name'));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -81,5 +93,16 @@ class SettingController extends Controller
     public function destroy(Setting $setting)
     {
         //
+    }
+
+    public function search(Request $request){
+        $query = $request->q;
+        $items = Item::with('category')->where('name', 'LIKE', '%'.$request->q.'%')
+        ->orWhere('description', 'LIKE', '%'.$request->q.'%')
+        ->orWhereHas('category', function($q) use ($request){
+            $q->where('name', 'LIKE', '%'.$request->q.'%');
+        })->get();
+        
+        return view('search', compact('items', 'query'));
     }
 }

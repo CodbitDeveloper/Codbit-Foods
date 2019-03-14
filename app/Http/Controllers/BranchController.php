@@ -71,17 +71,25 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'phone_number' => 'required',
+            'name' => 'required',
+            'location' => 'required'
+        ]);
+
+
         $branch = new Branch();
         
         $branch->setConnection('mysql2');
 
         $branch->name = $request->name;
         $branch->location = $request->location;
+        $branch->phone_number = $request->phone_number;
 
         $branch->save();
 
         return response()->json([
-            'status' => (bool) $branch, 
+            'error' => !(bool) $branch, 
             'data' => $branch,
             'message' => $branch ? 'Branch created successfully!' : 'Error creating branch'
         ]);
