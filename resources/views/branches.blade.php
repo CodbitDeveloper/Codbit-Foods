@@ -8,6 +8,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
+                    
                     <div class="mb-2">
                         <h1>Branches</h1>
                         <div class="float-sm-right">
@@ -27,11 +28,12 @@
                     </div>
 
                     <div class="separator mb-5"></div>
+                    
                     <div class="row list disable-text-selection">
                         <div class="col-12">
-                            <div class="card h-100 scroll" style="max-height:380px">
+                            <div class="card h-100">
                                 <div class="card-body">
-                                    <table class="data-table responsive nowrap mb-3"  data-order="[[ 0, &quot;desc&quot; ]]">
+                                    <table class="data-table responsive nowrap mb-3"  data-order="[[ 0, &quot;asc&quot; ]]">
                                         <thead>
                                             <th>Branch Name</th>
                                             <th>Branch Location</th>
@@ -61,6 +63,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -77,7 +80,7 @@
                             </button>
                         </div>
                         <div>
-                            <h3 class="mb-4">New Branch</h3>
+                            <h3 class="mb-4">New <b class="text-primary">Branch</b></h3>
                             <div class="col-12">
                                 <div class="form-row">
                                     <label class="form-group has-float-label col-12">
@@ -93,7 +96,7 @@
                                 </div>
                                 <div class="form-row">
                                     <label class="form-group has-float-label col-12">
-                                        <input class="form-control" name="location" type="tel" required/>
+                                        <input class="form-control" name="phone_number" type="tel" required/>
                                         <span>Phone</span>
                                     </label>
                                 </div>
@@ -101,7 +104,7 @@
                         </div>
                     </div>
                     <div class="modal-footer" style="border: none;">
-                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><b>Cancel</b></button>
                         <button type="submit" class="btn btn-primary"><b>Save</b></button>
                     </div>
                 </div>
@@ -111,7 +114,59 @@
 @endsection
 @section('scripts')
 <script src="{{asset('js/vendor/datatables.min.js')}}"></script>
+<script src="{{asset('js/vendor/bootstrap-notify.min.js')}}"></script>
 <script>
-    $('')
+    $('#new-branch-form').on('submit', function(e){
+        e.preventDefault();
+        var data = $(this).serialize();
+
+        var btn = $(this).find('[type="submit"]');
+
+        btn.html('<div class="lds-dual-ring-white"></div>');
+
+        $.ajax({
+            url: '/api/branches/add',
+            method: 'post',
+            data: data,
+            success: function(data){
+                $('.modal').modal('hide');
+                btn.html('Save');
+                if(data.error){
+                    $.notify({
+                        // options
+                        message: data.message
+                    },{
+                       // settings
+                        type: 'danger'
+                    });
+                }else{
+                    $.notify({
+                        // options
+                        message: data.message
+                    },{
+                       // settings
+                        type: 'success'
+                    });
+
+                    $('.data-table').DataTable().row.add([
+                        data.data.name,
+                        data.data.location,
+                        data.data.phone_number,
+                        '<span class="badge badge-pill badge-primary" onclick="toggleActivate('+data.data.id+')">Deactivate</span>'
+                    ]).draw(false);
+                }
+            },
+            error: function(err){
+                btn.html('Save');
+                $.notify({
+                    // options
+                    message: 'Network error. Try again!'
+                },{
+                   // settings
+                    type: 'danger'
+                });
+            }
+        })
+    });
 </script>
 @endsection

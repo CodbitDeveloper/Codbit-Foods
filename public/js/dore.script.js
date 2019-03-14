@@ -561,7 +561,11 @@ $.dore = function(element, options) {
 
     function getActiveMainMenuLink() {
       var dataLink = $(".main-menu ul li.active a").attr("href");
-      return dataLink.replace("#", "");
+      if(dataLink == null){
+        return "";
+      }else{
+        return dataLink.replace("#", "");
+      }
     }
 
     function isClassIncludedApp(className) {

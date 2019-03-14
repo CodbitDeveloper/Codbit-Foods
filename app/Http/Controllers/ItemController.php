@@ -251,8 +251,8 @@ class ItemController extends Controller
       }
 
       public function viewItem($item){
-          $item = Item::with(['category', 'comments', 'orders', 'ingredients', 'images', 'comments.user'])->where('id', $item)->first();
-
-          return view('item-details', compact('item'));
+          $item = Item::with(['category', 'comments', 'orders', 'ingredients', 'images', 'comments.customer'])->where('id', $item)->first();
+          $categories = Category::all();
+          return view('item-details', compact('item', 'categories'));
       }
 }

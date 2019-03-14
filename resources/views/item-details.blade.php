@@ -6,6 +6,15 @@
     <link rel="stylesheet" href="{{asset('css/vendor/component-custom-switch.min.css')}}" />
     <link rel="stylesheet" href="{{asset('css/vendor/bootstrap-float-label.min.css')}}" />
     <link rel="stylesheet" href="{{asset('css/vendor/bootstrap-stars.css')}}" />
+    <style>
+    .dz-progress{
+        display:none;
+    }
+
+    .dz-remove{
+        display:none;
+    }
+    </style>
 @endsection
 @section('content')
     <div class="container-fluid disable-text-selection">
@@ -113,13 +122,13 @@
                                         @foreach($item->comments as $comment)
                                         <div class="d-flex flex-row mb-3 pb-3 border-bottom">
                                             <a href="#">
-                                                <img class="round" height="40" style="width: 40px" avatar="{{$comment->user->firstname}} {{$comment->user->lastname}}" />
+                                                <img class="round" height="40" style="width: 40px" avatar="{{$comment->customer->firstname}} {{$comment->customer->lastname}}" />
                                             </a>
                                             <div class="pl-3 pr-2">
                                                 <a href="#">
                                                     <p class="font-weight-medium mb-0">{{$comment->comment}}
                                                     </p>
-                                                    <p class="text-muted mb-1 text-small">{{$comment->user->firstname}} {{$comment->user->lastname}} |
+                                                    <p class="text-muted mb-1 text-small">{{$comment->customer->firstname}} {{$comment->customer->lastname}} |
                                                         {{Carbon\Carbon::parse($comment->created_at)->diffForHumans()}}</p>
                                                 </a>
                                                 <div class="form-group mb-0">
@@ -162,43 +171,39 @@
                             </div>
                             <div>
                                 <h3 class="mb-4">Edit Item</h3>
+                                <form method="post" id="edit-item" action="#">
                                 <div class="col-12">
                                     <div class="form-row">
+                                        <input name="id" type="hidden" value="{{$item->id}}"/>
                                         <label class="form-group has-float-label col-12">
-                                            <input class="form-control" />
+                                            <input class="form-control" value="{{$item->name}}"/>
                                             <span>Item Name</span>
                                         </label>
                                     </div>
                                     <div class="form-row">
                                         <label class="form-group has-float-label col-12">
-                                            <input class="form-control" type="number" />
+                                            <input class="form-control" type="number" value="{{$item->price}}"/>
                                             <span>Item Price</span>
                                         </label>
                                     </div>
                                     <div class="form-row">
                                         <label class="form-group has-float-label col-12">
                                             <select class="form-control select2-single col-12">
-                                                <option selected disabled hidden></option>
-                                                <option value="CA">Starters</option>
-                                                <option value="NV">Lunch</option>
-                                                <option value="OR">Dessert</option>
+                                                @foreach($categories as $category)
+                                                    <option value="{{$category->id}}">{{$category->name}}</option>
+                                                @endforeach
                                             </select>
                                             <span>Category</span>
                                         </label>
                                     </div>
                                     <div class="form-row">
                                         <label class="form-group has-float-label col-12">
-                                            <textarea class="form-control" rows="4"></textarea>
+                                            <textarea class="form-control" rows="4">{{$item->description}}</textarea>
                                             <span>Description</span>
                                         </label>
                                     </div>
                                     <div class="form-row">
-                                        <div class="col-sm-12">
-                                            <form action="/file-upload">
-                                                <div class="dropzone">
-                                                </div>
-                                            </form>
-                                        </div>
+                                        <div class="col-12 dropzone" id="item-image"></div>
                                     </div>
                                 </div>
                             </div>
@@ -206,7 +211,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary"><b>Save Item</b></button>
+                            <button type="submit" class="btn btn-primary" id="submit-edit"><b>Save Item</b></button>
                         </div>
                         </form>
                     </div>
@@ -220,4 +225,157 @@
     <script src="{{asset('js/vendor/select2.full.js')}}"></script>
     <script src="{{asset('js/vendor/bootstrap-notify.min.js')}}"></script>
     <script src="{{asset('js/vendor/dropzone.min.js')}}"></script>
+    <script>
+        Dropzone.autoDiscover = false;
+
+        $('#item-image').dropzone({
+                method: 'put',
+                url: '/api/items/update',
+                autoProcessQueue: false,
+                uploadMultiple: false,
+                parallelUploads: 5,
+                maxFiles: 5,
+                maxFilesize: 1,
+                acceptedFiles: 'image/*',
+                thumbnailWidth: 160,
+                previewTemplate: '<div class="dz-preview dz-file-preview mb-3"><div class="d-flex flex-row "> <div class="p-0 w-30 position-relative"> <div class="dz-error-mark"><span><i class="simple-icon-exclamation"></i>  </span></div>      <div class="dz-success-mark"><span><i class="simple-icon-check-circle"></i></span></div>      <img data-dz-thumbnail class="img-thumbnail border-0" /> </div> <div class="pl-3 pt-2 pr-2 pb-1 w-70 dz-details position-relative"> <div> <span data-dz-name /> </div> <div class="text-primary text-extra-small" data-dz-size /> </div> <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>        <div class="dz-error-message"><span data-dz-errormessage></span></div>            </div><a href="#" class="remove" data-dz-remove> <i class="simple-icon-trash"></i> </a></div>',
+
+                init: function() {
+                    dzClosure2 = this; // Makes sure that 'this' is understood inside the functions below.
+
+                    // for Dropzone to process the queue (instead of default form behavior):
+                    $("#submit-edit").on("click", function(e) {
+                        // Make sure that the form isn't actually being sent.
+                        e.preventDefault();
+                        dzClosure2.options.url += "/"+$('#edit-cat-id').val();
+                        $('#submit-edit').html('<div class="lds-dual-ring-white"></div>');
+                        if (dzClosure2.getQueuedFiles().length > 0) {         
+                            dzClosure2.options.method = "POST";               
+                            dzClosure2.processQueue();  
+                        } else {                       
+                             //ajax request to update item without image 
+                             $.ajax({
+                                 url : dzClosure2.options.url,
+                                 method: 'post',
+                                 data: 'name='+$('#edit-cat-name').val(),
+                                 success: function(data, status, xhr){
+                                    $('#submit-edit').html('Save');
+                                    $('#submit-edit').prop('disabled', false);
+                                    if(data.error){
+                                        $.notify({
+                                            // options
+                                            message: data.message
+                                        },{
+                                            // settings
+                                            type: 'danger'
+                                        });
+
+                                    }else{
+                                        $.notify({
+                                            // options
+                                            message: data.message
+                                        },{
+                                            // settings
+                                            type: 'success'
+                                        });
+
+                                        
+                                        setTimeout(function(){
+                                            location.reload();
+                                        }, 500);
+                                    }
+
+                                    
+                    
+                                    $(".modal").modal('hide');
+                                 },
+
+                                 error: function(err, desc){
+                                    $('#submit-edit').html('Save');
+                                    $('#submit-edit').prop('disabled', false);
+                                    $.notify({
+                                            // options
+                                            message: 'Network error'
+                                        },{
+                                            // settings
+                                            type: 'danger'
+                                        });
+                    
+                                        $(".modal").modal('hide');
+                                 }
+                             })
+                        }   
+                    });
+
+                    
+                    this.on("sending", function(file, xhr, frmData) {
+                        alert(JSON.stringify(frmData));
+                        frmData.append("name", $("#edit-cat-name").val());
+                    });
+
+
+                    this.on("success", function(response, responseText){
+                        $('#submit-edit').html('Save');
+                        $('#submit-edit').prop('disabled', false);
+                        $(".modal").modal('hide');
+                        
+                        var data = responseText;
+                        console.log(data);
+                        
+                        if(data.error){
+                            $.notify({
+                                // options
+                                message: data.message
+                            },{
+                                // settings
+                                type: 'danger'
+                            });
+
+                        }else{
+                            $.notify({
+                                // options
+                                message: data.message
+                            },{
+                                // settings
+                                type: 'success'
+                            });
+
+                            setTimeout(function(){
+                                location.reload();
+                            }, 500);
+
+                            dzClosure.removeAllFiles();
+                            $("#edit-category-form").trigger('reset');
+                        }
+                    });
+
+
+                    this.on('error', function(err, desc){
+                        $('#submit-edit').val('Save');
+                        $('#submit-edit').prop('disabled', false);
+                        $.notify({
+                                // options
+                                message: "Network error. Try again."
+                            },{
+                                // settings
+                                type: 'danger'
+                            });
+                    
+                        $(".modal").modal('hide');
+
+                    });
+                    
+                }
+            });
+
+            $(document).ready(function(){
+                var img = {
+                    name: "{{$item->image}}",
+                    size: 12345
+                }
+
+                Dropzone.forElement('#item-image').emit("addedfile", img);
+                Dropzone.forElement('#item-image').emit("thumbnail", img, "/img/foods/"+img.name);
+            })
+    </script>
 @endsection

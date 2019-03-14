@@ -232,16 +232,17 @@
             @foreach($restaurants as $restaurant)
             <div class="row">
                 <div class="col-12 list" data-check-all="checkAll">
+                    @foreach($restaurants as $restaurant)
                     <div class="card d-flex flex-row mb-3">
                         <div class="d-flex flex-grow-1 min-width-zero">
                             <div class="card-body align-self-center d-flex flex-column flex-md-row justify-content-between min-width-zero align-items-md-center">
                                 <a class="list-item-heading mb-1 truncate w-40 w-xs-100" href="#">
-                                    {{ ucwords($restaurant->name.', Ghana') }}
+                                    {{ucwords($restaurant->name)}}
                                 </a>
-                                <p class="mb-1 text-muted text-small w-15 w-xs-100">{{ $restaurant->email }}</p>
-                                <p class="mb-1 text-muted text-small w-15 w-xs-100"><a href="#">{{ $restaurant->website != null ? $restaurant->website : 'N/A' }}</a></p>
+                                <p class="mb-1 text-muted text-small w-15 w-xs-100">{{$restaurant->email}}</p>
+                                <p class="mb-1 text-muted text-small w-15 w-xs-100"><a href="#">{{$restaurant->website != null ? $restaurant->website : 'N/A'}}</a></p>
                                 <div class="w-15 w-xs-100">
-                                    <span class="badge badge-pill badge-secondary">{{ $restaurant->active == 1 ? 'Active' : 'Deactive' }}</span>
+                                    <span class="badge badge-pill badge-secondary">{{$restaurant->active == 1 ? 'Active' : 'Deactivated'}}</span>
                                 </div>
                             </div>
                             <div class="custom-control custom-checkbox pl-1 align-self-center pr-4">
@@ -252,6 +253,7 @@
                             </div>
                         </div>
                     </div>
+                    @endforeach
                 </div>
             </div>
             @endforeach

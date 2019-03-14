@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Admin;
+use App\Restaurant;
+
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -19,9 +21,9 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $admins = Admin::all();
+        $restaurants = Restaurant::all();
 
-        return view('admin.dashboard', compact('admins'));
+        return view('admin.dashboard', compact('restaurants'));
     }
 
     /**
