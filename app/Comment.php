@@ -14,7 +14,7 @@ class Comment extends Model
     protected $table = 'comments';
 
     protected $fillable = [
-        'customer_id', 'item_id', 'comment', 'ratings',
+        'customer_id', 'item_id', 'comment', 'ratings', 'branch_id', 
     ];
 
     public function customer()
@@ -25,5 +25,10 @@ class Comment extends Model
     public function item()
     {
         return $this->belongsTo('App\Item');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo('App\Branch');
     }
 }

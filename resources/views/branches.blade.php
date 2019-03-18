@@ -12,7 +12,7 @@
                     <div class="mb-2">
                         <h1>Branches</h1>
                         <div class="float-sm-right">
-                            @if(strtolower(Auth::user()->role) != 'attendant')
+                            @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-backdrop="static"
                                 data-target="#newBranchModal">ADD NEW</button>
                             @endif

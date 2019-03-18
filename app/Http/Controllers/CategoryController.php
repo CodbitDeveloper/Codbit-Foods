@@ -30,7 +30,7 @@ class CategoryController extends Controller
       {
          $categories = Category::all();
 
-         if(strtolower(Auth::user()->role) == 'admin'){
+         if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager'){
           return view('categories')->with('categories', $categories);
          }else{
            return abort(403);

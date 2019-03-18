@@ -22,6 +22,6 @@ class paymentType extends Model
 
     public function order()
     {
-        return $this->belongsToMany('App\Order');
+        return $this->hasMany(Order::class);
     }
 }

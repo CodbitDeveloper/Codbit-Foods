@@ -146,7 +146,7 @@
                             <span>Menu Items</span>
                         </a>
                     </li>
-                    @if(strtolower(Auth::user()->role) != 'attendant')
+                    @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='categories'){echo 'active'; } ?>" >
                         <a href="/categories">
                             <i class="iconsmind-Check"></i>
@@ -154,7 +154,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(strtolower(Auth::user()->role) != 'attendant')
+                    @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='employees'){echo 'active'; } ?>" >
                         <a href="/employees">
                             <i class="iconsmind-User"></i>
@@ -162,7 +162,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(strtolower(Auth::user()->role) != 'attendant')
+                    @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='branches'){echo 'active'; } ?>" >
                         <a href="/branches">
                             <i class="iconsmind-Shop-2"></i>
@@ -170,7 +170,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(strtolower(Auth::user()->role) != 'attendant')
+                    @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='reports'){echo 'active'; } ?>" >
                         <a href="#">
                             <i class="iconsmind-Pie-Chart3"></i>
@@ -178,7 +178,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(strtolower(Auth::user()->role) != 'attendant')
+                    @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='feedback'){echo 'active'; } ?>" >
                         <a href="/feedback">
                             <i class="iconsmind-Envelope"></i>

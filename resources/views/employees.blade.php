@@ -11,8 +11,10 @@
                     <div class="mb-2">
                         <h1>Users</h1>
                         <div class="float-sm-right">
+                            @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-backdrop="static"
                                 data-target="#newUserModal">ADD NEW</button>
+                            @endif
                         </div>
                         <nav class="breadcrumb-container d-none d-sm-block d-lg-inline-block" aria-label="breadcrumb">
                             <ol class="breadcrumb pt-0">

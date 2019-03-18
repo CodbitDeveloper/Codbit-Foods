@@ -6,6 +6,7 @@ use App\Comment;
 use App\Item;
 use App\User;
 use Illuminate\Http\Request;
+use App\Notifications\Comments;
 
 class CommentController extends Controller
 {
@@ -60,8 +61,9 @@ class CommentController extends Controller
         $result = true;
 
         $request->validate([
-            'user_id' => 'required',
+            'customer_id' => 'required',
             'item_id' => 'required',
+            'branch_id' => 'required',
             'comment' => 'required',
             'ratings' => 'required'
         ]);
@@ -69,12 +71,19 @@ class CommentController extends Controller
 
         $comment = new Comment();
 
-        $comment->user_id = Auth::user()->id;
+        $comment->customer_id = $request->customer_id;
         $comment->item_id = $item;
+        $comment->branch_id = $request->branch_id;
         $comment->comment = $request->comment;
         $comment->ratings = $request->ratings;
         
         if($comment->save()){
+            $users = User::where([['role', '=', 'admin'], ['branch_id', '=', $request->branch_id]])->orWhere('role', '=', 'Manager')->get();
+
+            foreach($users as $user){
+                $user->notify(new Comments($comment));
+            }
+
             return response()->json([
                 'data' => $comment,
                 'mesage' => 'Comment saved successfuly',

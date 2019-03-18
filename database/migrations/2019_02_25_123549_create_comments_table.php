@@ -17,6 +17,7 @@ class CreateCommentsTable extends Migration
             $table->increments('id');
             $table->integer('customer_id')->unsigned();
             $table->integer('item_id')->unsigned();
+            $table->integer('branch_id')->unsigned();
             $table->text('comment');
             $table->integer('ratings');
             $table->timestamps();
@@ -25,6 +26,8 @@ class CreateCommentsTable extends Migration
             $table->foreign('customer_id')->references('id')->on('customers')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('branch_id')->references('id')->on('branches')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }

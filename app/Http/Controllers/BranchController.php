@@ -32,7 +32,7 @@ class BranchController extends Controller
     {
         $branches = Branch::latest()->get();
 
-        if(strtolower(Auth::user()->role) == 'admin'){
+        if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager'){
             return view('branches')->with('branches', $branches);
         }else{
             return abort(403);

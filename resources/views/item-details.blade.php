@@ -51,7 +51,7 @@
                     <div class="row">
                         <div class="col-lg-4 col-12 mb-4">
                             <div class="card mb-4">
-                                @if(strtolower(Auth::user()->role) != 'attendant')
+                                @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                                 <div class="position-absolute card-top-buttons">
                                     <button class="btn btn-outline-white icon-button" data-toggle="modal" data-target="#editItemModal">
                                         <i class="simple-icon-pencil"></i>
@@ -158,7 +158,7 @@
                     </div>
                 </div>
             </div>
-            @if(strtolower(Auth::user()->role) != 'attendant')
+            @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
             <div class="modal fade modal-right" id="editItemModal" role="dialog" aria-labelledby="editItemModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
