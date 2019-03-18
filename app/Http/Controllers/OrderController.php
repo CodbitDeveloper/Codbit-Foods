@@ -6,6 +6,9 @@ use App\Order;
 use App\Customer;
 use App\Category;
 use App\Item;
+use App\User;
+use App\Admin;
+use App\Notifications\IncomingOrder;
 
 use Illuminate\Http\Request;
 use Config;
@@ -137,12 +140,23 @@ class OrderController extends Controller
 
             $order->items()->attach($items);
 
+            $users = User::where([['role', 'admin'], ['branch_id', $request->branch_id]])->orWhere('role', 'Manager')->get();
+
+            foreach($users as $user){
+                $user->notify(new IncomingOrder($order));
+            }
+
+            $admins = Admin::all();
+
+            foreach($admins as $admin){
+                $admin->notify(new IncomingOrder($order));
+            }
+
             return response()->json([
                 'error' => false,
                 'message' => 'Order saved.',
                 'data' => $order
             ]);
-
         }else{
             return response()->json([
                 'error' => true,

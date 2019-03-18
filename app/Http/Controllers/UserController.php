@@ -25,7 +25,7 @@ class UserController extends Controller
         $users = User::all();
         $branches = Branch::all();
 
-        if(strtolower(Auth::user()->role) == 'admin'){
+        if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager'){
           return view('employees')->with('users', $users)->with('branches', $branches);
          }else{
            return abort(403);

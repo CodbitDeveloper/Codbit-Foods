@@ -19,7 +19,7 @@ class CreateCustomersTable extends Migration
             $table->string('lastname');
             $table->string('email')->unique();
             $table->string('phone');
-            $table->string('token');
+            $table->string('token')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

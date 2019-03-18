@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Feedback;
 use App\Customer;
+use App\User;
+use App\Notifications\Feedbacks;
 
 use Config;
 
@@ -23,7 +25,6 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        //
         $feedbacks = Feedback::with('customer')->latest()->get()->groupBy('customer_id');
         
         return view('feedback', compact('feedbacks'));
@@ -47,7 +48,38 @@ class FeedbackController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'suggestion' => 'required',
+            'customer_id' => 'required',
+            'branch_id' => 'required',
+            'ratings' => 'required'
+        ]);
+
+        $feedback = new Feedback();
+
+        $feedback->suggestion = $request->suggestion;
+        $feedback->customer_id = $request->customer_id;
+        $feedback->branch_id = $request->branch_id;
+        $feedback->ratings = $request->ratings;
+
+        if($feedback->save()){
+            $users = User::where([['role', 'admin'], ['branch_id', $request->branch_id]])->orWhere('role', 'Manager')->get();
+
+            foreach($users as $user){
+                $user->notify(new Feedbacks($feedback));
+            }
+
+            return response()->json([
+                'data' => $feedback,
+                'message' => 'Feedback sent successfully',
+                'error' => false
+            ]);
+        }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'Error saving feedback, Try Again!'
+            ]);
+        }
     }
 
     /**

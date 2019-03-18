@@ -110,7 +110,7 @@
                                         <i class="simple-icon-refresh"></i>
                                     </button>
                                 </div>
-                                @if(strtolower(Auth::user()->role) != 'attendant')
+                                @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                                 <div class="card-body">
                                     <h5 class="card-title">This Week's Sales</h5>
                                     <div class="dashboard-line-chart">
@@ -123,7 +123,7 @@
                     </div>
                 </div>
             </div>
-            @if(strtolower(Auth::user()->role) != 'attendant')
+            @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
             <div class="row">
                 <div class="col-sm-12 col-lg-4 mb-4">
                     <div class="card h-100 scroll" style="max-height:380px">
@@ -151,7 +151,7 @@
                     </div>
                 </div>
                 @endif
-                @if(strtolower(Auth::user()->role) != 'attendant')
+                @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                 <div class="col-sm-12 col-lg-4 mb-4">
                     <div class="card dashboard-link-list">
                         <div class="card-body">

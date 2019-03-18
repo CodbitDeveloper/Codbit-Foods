@@ -149,6 +149,7 @@ class RestaurantController extends Controller
                 `id` int(10) UNSIGNED NOT NULL,
                 `customer_id` int(10) UNSIGNED NOT NULL,
                 `item_id` int(10) UNSIGNED NOT NULL,
+                `branch_id` int(10) UNSIGNED NOT NULL,
                 `comment` text COLLATE utf8mb4_unicode_ci NOT NULL,
                 `ratings` int(11) NOT NULL,
                 `created_at` timestamp NULL DEFAULT NULL,
@@ -161,7 +162,7 @@ class RestaurantController extends Controller
                 `lastname` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
                 `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
                 `phone` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-                `token` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+                `token` varchar(191) COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
                 `created_at` timestamp NULL DEFAULT NULL,
                 `updated_at` timestamp NULL DEFAULT NULL,
                 `deleted_at` timestamp NULL DEFAULT NULL
@@ -250,6 +251,16 @@ class RestaurantController extends Controller
             CREATE TABLE `item_promo` (
                 `item_id` int(10) UNSIGNED NOT NULL,
                 `promo_id` int(10) UNSIGNED NOT NULL,
+                `created_at` timestamp NULL DEFAULT NULL,
+                `updated_at` timestamp NULL DEFAULT NULL
+            );
+            CREATE TABLE `notifications` (
+                `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+                `type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+                `notifiable_type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+                `notifiable_id` bigint(20) UNSIGNED NOT NULL,
+                `data` text COLLATE utf8mb4_unicode_ci NOT NULL,
+                `read_at` timestamp NULL DEFAULT NULL,
                 `created_at` timestamp NULL DEFAULT NULL,
                 `updated_at` timestamp NULL DEFAULT NULL
             );
@@ -358,7 +369,8 @@ class RestaurantController extends Controller
             ALTER TABLE `comments`
             ADD PRIMARY KEY (`id`),
             ADD KEY `comments_customer_id_foreign` (`customer_id`),
-            ADD KEY `comments_item_id_foreign` (`item_id`);
+            ADD KEY `comments_item_id_foreign` (`item_id`),
+            ADD KEY `comments_branch_id_foreign` (`branch_id`);
 
             ALTER TABLE `customers`
             ADD PRIMARY KEY (`id`),
@@ -403,6 +415,10 @@ class RestaurantController extends Controller
             ALTER TABLE `item_promo`
             ADD PRIMARY KEY (`item_id`,`promo_id`),
             ADD KEY `item_promo_promo_id_foreign` (`promo_id`);
+
+            ALTER TABLE `notifications`
+            ADD PRIMARY KEY (`id`),
+            ADD KEY `notifications_notifiable_type_notifiable_id_index` (`notifiable_type`,`notifiable_id`);
 
             ALTER TABLE `orders`
             ADD PRIMARY KEY (`id`),
@@ -493,7 +509,8 @@ class RestaurantController extends Controller
 
             ALTER TABLE `comments`
             ADD CONSTRAINT `comments_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-            ADD CONSTRAINT `comments_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+            ADD CONSTRAINT `comments_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `comments_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `customer_promo`
             ADD CONSTRAINT `customer_promo_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,

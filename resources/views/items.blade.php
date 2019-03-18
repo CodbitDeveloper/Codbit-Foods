@@ -23,7 +23,7 @@
                 <div class="col-12">
                     <div class="mb-2">
                         <h1>Menu Items</h1>
-                        @if(strtolower(Auth::user()->role) != 'attendant')
+                        @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                         <div class="float-sm-right">
                             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-backdrop="static"
                                 data-target="#newItemModal">ADD NEW</button>
@@ -53,7 +53,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="form-group row mb-1 float-right">
-                                                @if(strtolower(Auth::user()->role) != 'attendant')
+                                                @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                                                 <div class="col-12">
                                                     <div class="custom-switch custom-switch-primary mb-2" id="switch-{{$item->id}}">
                                                         <input class="custom-switch-input" id="input-{{$item->id}}" type="checkbox"  <?php if($item->active == 1){echo "checked";}?> onclick="toggleActive({{$item->id}})"/>
@@ -89,7 +89,7 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        @if(strtolower(Auth::user()->role) != 'attendant')
+                        @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                         <div>
                             <h3 class="mb-4">New Item</h3>
                             <form method="post" action="#" id="new-item-form">
@@ -229,9 +229,10 @@
                     e.preventDefault();
 
                     if(!$('#new-cat-name').val() == ''){
-                        $('#submit-all').html('<div class="lds-dual-ring-white"></div>');
+                        
                     }
-
+                    
+                    $('#submit-all').html('<div class="lds-dual-ring-white"></div>');
                     dzClosure.processQueue();
                 });
 
@@ -277,15 +278,23 @@
                 });
 
                 this.on('error', function(err, desc){
-                    $('#submit-all').html('Save');
-                    $(".modal").modal('hide');
-                    $.notify({
-                            // options
-                            message: "Network error. Try again."
-                        },{
-                            // settings
-                            type: 'danger'
+                    if(desc.includes("File is too big")){
+                        
+                    }else{
+                        $('#submit-all').html('Save');
+                        $(".modal").modal('hide');
+
+                        console.log(err);
+                        console.log(desc);
+                        $.notify({
+                                // options
+                                message: "Network error. Try again."
+                            },{
+                                // settings
+                                type: 'danger'
                         });
+                    }
+                    
                 });
                 
             }
