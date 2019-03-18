@@ -6,10 +6,7 @@
     <title>Codbit Foods</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="{{asset('font/iconsmind/style.css')}}" />
-    
     <link rel="stylesheet" href="{{asset('font/simple-line-icons/css/simple-line-icons.css')}}" />
-
     <link rel="stylesheet" href="{{asset('css/vendor/bootstrap.min.css')}}" />
     <link rel="stylesheet" href="{{asset('css/vendor/perfect-scrollbar.css')}}" />
     <link rel="stylesheet" href="{{asset('css/main.css')}}" />
@@ -130,26 +127,26 @@
                 <ul class="list-unstyled">
                     <li class="<?php if($page=='dashboard'){echo 'active'; } ?>" >
                         <a href="/home">
-                            <i class="iconsmind-Home"></i>
+                            <i class="simple-icon-home"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li class="<?php if($page=='orders'){echo 'active'; } ?>" >
                         <a href="/orders">
-                            <i class="iconsmind-Cash-register2"></i>
+                            <i class="simple-icon-basket"></i>
                             <span>Orders</span>
                         </a>
                     </li>
                     <li class="<?php if($page=='items'){echo 'active'; } ?>" >
                         <a href="/menu">
-                            <i class="iconsmind-Hamburger"></i>
-                            <span>Menu Items</span>
+                            <i class="simple-icon-cup"></i>
+                            <span>Menu</span>
                         </a>
                     </li>
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='categories'){echo 'active'; } ?>" >
                         <a href="/categories">
-                            <i class="iconsmind-Check"></i>
+                            <i class="simple-icon-grid"></i>
                             <span>Categories</span>
                         </a>
                     </li>
@@ -157,7 +154,7 @@
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='employees'){echo 'active'; } ?>" >
                         <a href="/employees">
-                            <i class="iconsmind-User"></i>
+                            <i class="simple-icon-people"></i>
                             <span>Employees</span>
                         </a>
                     </li>
@@ -165,15 +162,15 @@
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='branches'){echo 'active'; } ?>" >
                         <a href="/branches">
-                            <i class="iconsmind-Shop-2"></i>
+                            <i class="simple-icon-directions"></i>
                             <span>Branches</span>
                         </a>
                     </li>
                     @endif
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='reports'){echo 'active'; } ?>" >
-                        <a href="#">
-                            <i class="iconsmind-Pie-Chart3"></i>
+                        <a href="/reports">
+                            <i class="simple-icon-chart"></i>
                             <span>Reports</span>
                         </a>
                     </li>
@@ -181,7 +178,7 @@
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='feedback'){echo 'active'; } ?>" >
                         <a href="/feedback">
-                            <i class="iconsmind-Envelope"></i>
+                            <i class="simple-icon-speech"></i>
                             <span>Customer Feedback</span>
                         </a>
                     </li>

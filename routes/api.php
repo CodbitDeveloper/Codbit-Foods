@@ -60,3 +60,6 @@ Route::prefix('customer')->middleware('cors')->group(function(){
     Route::get('/change-conn', 'CustomerController@changeConnection');
     Route::get('/test-conn', 'CustomerController@testConnection');
 });
+
+Route::post('/report/order/weekly', 'OrderController@weeklyReport')->name('report.sales.weekly');
+Route::post('/report/order/monthly', 'OrderController@weeklyReport')->name('report.sales.weekly');

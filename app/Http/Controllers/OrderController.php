@@ -257,4 +257,41 @@ class OrderController extends Controller
         $order = Order::with('items', 'customer', 'branch')->where('id', '=', $order)->first();
         return view('invoice', compact('order'));
     }
+
+    public function weeklyReport(Request $request){
+        $request->validate([
+            'date' => 'required'
+        ]);
+        $date = substr($request->date, 0, strpos($request->date, " 00:"));
+        $date = date('Y-m-d', strtotime($date));
+        
+        $orders = Order::selectRaw("SUM(total_price) as sales, DAYOFWEEK(created_at) as day")
+        ->whereRaw("WEEK(created_at) = WEEK('$date')")->groupBy('day')->get();
+
+        return response()->json(
+            [
+                'date' => $date,
+                'orders' => $orders
+            ]
+        );
+    }
+
+    public function monthlyReport(Request $request){
+        $request->validate([
+            'date' => 'required'
+        ]);
+
+        $date = substr($request->date, 0, strpos($request->date, " 00:"));
+        $date = date('Y-m-d', strtotime($date));
+        
+        $orders = Order::selectRaw("SUM(total_price) as sales, DAY(created_at) as day")
+        ->whereRaw("MONTH(created_at) = MONTH('$date')")->groupBy('day')->get();
+
+        return response()->json(
+            [
+                'date' => $date,
+                'orders' => $orders
+            ]
+        );
+    }
 }

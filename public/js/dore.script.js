@@ -666,61 +666,6 @@ $.dore = function(element, options) {
       $(this).toggleClass("rotate");
     });
 
-    /* 03.10. Calendar */
-    if ($().fullCalendar) {
-      var testEvent = new Date(new Date().setHours(new Date().getHours()));
-      var day = testEvent.getDate();
-      var month = testEvent.getMonth() + 1;
-      $(".calendar").fullCalendar({
-        themeSystem: "bootstrap4",
-        height: "auto",
-        buttonText: {
-          today: "Today",
-          month: "Month",
-          week: "Week",
-          day: "Day",
-          list: "List"
-        },
-        bootstrapFontAwesome: {
-          prev: " simple-icon-arrow-left",
-          next: " simple-icon-arrow-right",
-          prevYear: "simple-icon-control-start",
-          nextYear: "simple-icon-control-end"
-        },
-        events: [
-          {
-            title: "Account",
-            start: "2018-05-18"
-          },
-          {
-            title: "Delivery",
-            start: "2018-09-22",
-            end: "2018-09-24"
-          },
-          {
-            title: "Conference",
-            start: "2018-06-07",
-            end: "2018-06-09"
-          },
-          {
-            title: "Delivery",
-            start: "2018-11-03",
-            end: "2018-11-06"
-          },
-          {
-            title: "Meeting",
-            start: "2018-10-07",
-            end: "2018-10-09"
-          },
-          {
-            title: "Taxes",
-            start: "2018-08-07",
-            end: "2018-08-09"
-          }
-        ]
-      });
-    }
-
     /* 03.11. Datatable */
     if ($().DataTable) {
       $(".data-table").DataTable({
@@ -1007,41 +952,6 @@ $.dore = function(element, options) {
         placeholder: "",
         maximumSelectionSize: 6,
         containerCssClass: ":all:"
-      });
-    }
-
-    /* 03.19. Datepicker */
-    if ($().datepicker) {
-      $("input.datepicker").datepicker({
-        autoclose: true,
-        templates: {
-          leftArrow: '<i class="simple-icon-arrow-left"></i>',
-          rightArrow: '<i class="simple-icon-arrow-right"></i>'
-        }
-      });
-
-      $(".input-daterange").datepicker({
-        autoclose: true,
-        templates: {
-          leftArrow: '<i class="simple-icon-arrow-left"></i>',
-          rightArrow: '<i class="simple-icon-arrow-right"></i>'
-        }
-      });
-
-      $(".input-group.date").datepicker({
-        autoclose: true,
-        templates: {
-          leftArrow: '<i class="simple-icon-arrow-left"></i>',
-          rightArrow: '<i class="simple-icon-arrow-right"></i>'
-        }
-      });
-
-      $(".date-inline").datepicker({
-        autoclose: true,
-        templates: {
-          leftArrow: '<i class="simple-icon-arrow-left"></i>',
-          rightArrow: '<i class="simple-icon-arrow-right"></i>'
-        }
       });
     }
 

@@ -105,4 +105,8 @@ class SettingController extends Controller
         
         return view('search', compact('items', 'query'));
     }
+
+    public function reports(Request $request){
+        return view('reports');
+    }
 }
