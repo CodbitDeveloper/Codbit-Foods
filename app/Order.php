@@ -30,11 +30,7 @@ class Order extends Model
 
     public function paymentType()
     {
-<<<<<<< HEAD
-        return $this->hasOne('App\paymentType');
-=======
         return $this->belongsTo('App\paymentType', 'payment_type_id');
->>>>>>> 08e9854bc3ac573df523918dfe10fa6570d14831
     }
 
     public function delivery()

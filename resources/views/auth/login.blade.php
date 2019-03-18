@@ -6,13 +6,8 @@
     <title>Login | Codbit Foods</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="font/iconsmind/style.css" />
     <link rel="stylesheet" href="font/simple-line-icons/css/simple-line-icons.css" />
-
-    <link rel="stylesheet" href="css/vendor/bootstrap-stars.css" />
     <link rel="stylesheet" href="css/vendor/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/vendor/owl.carousel.min.css" />
-    <link rel="stylesheet" href="css/vendor/bootstrap-stars.css" />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/dore.light.red.css" />
     <link rel="stylesheet" href="css/vendor/bootstrap-float-label.min.css" />
@@ -22,9 +17,6 @@
 <body class="show-spinner">
     <div class="landing-page">
         <div class="mobile-menu">
-            <a href="LandingPage.Home.html" class="logo-mobile">
-                <span></span>
-            </a>
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a href="/">HOME</a>

@@ -88,7 +88,7 @@
             <input class="form-control flex-grow-1" type="text" placeholder="Say something back">
             <div>
                 <button type="button" class="btn btn-primary icon-button large">
-                    <i class="iconsmind-Paper-Plane"></i>
+                    <i class="simple-icon-paper-plane"></i>
                 </button>
 
             </div>
