@@ -57,7 +57,6 @@ class DispatchController extends Controller
      */
     public function store(Request $request)
     {
-        $result = true;
         $request->validate([
             'firstname' => 'required|string',
             'lastname'  => 'required|string',
@@ -72,14 +71,17 @@ class DispatchController extends Controller
          
 
          if($dispatch->save()){
-             $result = false;
+            return response()->json([
+                'error' => false,
+                'data' => $dispatch,
+                'message' => 'Dispatch Rider created successfullly'
+             ], 201);
+         }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'Error creating dispatch rider'
+             ]);
          }
-
-         return response()->json([
-            'error' => $result,
-            'data' => $dispatch,
-            'message' => !$result ? 'Dispatch Rider created successfullly' : 'Error creating dispatch rider'
-         ], 201);
     }
 
     /**
