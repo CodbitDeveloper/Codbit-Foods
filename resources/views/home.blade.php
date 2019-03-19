@@ -1,7 +1,7 @@
 @extends('layouts.dashboard', ['page' => 'dashboard'])
 @section('styles')
-<link rel="stylesheet" href="{{asset('css/vendor/dataTables.bootstrap4.min.css')}}" />
-<link rel="stylesheet" href="{{asset('css/vendor/datatables.responsive.bootstrap4.min.css')}}" />
+    <link rel="stylesheet" href="{{asset('css/vendor/dataTables.bootstrap4.min.css')}}" />
+    <link rel="stylesheet" href="{{asset('css/vendor/datatables.responsive.bootstrap4.min.css')}}" />
 @endsection
 @section('content')
 <div id="app" class="container-fluid">
@@ -16,14 +16,14 @@
                             <div class="owl-carousel dashboard-numbers">
                                 <a href="#" class="card">
                                     <div class="card-body text-center">
-                                        <i class="iconsmind-Alarm"></i>
+                                        <i class="simple-icon-clock"></i>
                                         <p class="card-text mb-0">Pending Orders</p>
                                         <p class="lead text-center" id="pending">{{$pending_orders->count()}}</p>
                                     </div>
                                 </a>
                                 <a href="#" class="card">
                                     <div class="card-body text-center">
-                                        <i class="iconsmind-Arrow-Refresh"></i>
+                                        <i class="simple-icon-refresh"></i>
                                         <p class="card-text mb-0">In Progress</p>
                                         <p class="lead text-center" id="in-progress" style="display:none;">11</p>
                                         <div class="lds-dual-ring mr-auto ml-auto"></div>
@@ -32,7 +32,7 @@
 
                                 <a href="#" class="card">
                                     <div class="card-body text-center">
-                                        <i class="iconsmind-Thumb"></i>
+                                        <i class="simple-icon-check"></i>
                                         <p class="card-text mb-0">Completed Today</p>
                                         <p class="lead text-center" id="completed" style="display:none;">11</p>
                                         <div class="lds-dual-ring mr-auto ml-auto"></div>
@@ -41,7 +41,7 @@
 
                                 <a href="#" class="card">
                                     <div class="card-body text-center">
-                                        <i class="iconsmind-Coins"></i>
+                                        <i class="simple-icon-wallet"></i>
                                         <p class="card-text mb-0">Daily Sales</p>
                                         <p class="lead text-center" id="sales" style="display:none;">11</p>
                                         <div class="lds-dual-ring mr-auto ml-auto"></div>
@@ -50,7 +50,7 @@
 
                                 <a href="#" class="card">
                                     <div class="card-body text-center">
-                                        <i class="iconsmind-Speach-BubbleDialog"></i>
+                                        <i class="simple-icon-bubbles"></i>
                                         <p class="card-text mb-0">New Comments</p>
                                         <p class="lead text-center" id="comments" style="display:none;">11</p>
                                         <div class="lds-dual-ring mr-auto ml-auto"></div>
@@ -252,7 +252,6 @@
 <script src="{{asset('js/vendor/Chart.bundle.min.js')}}" ></script>
 <script src="{{asset('js/vendor/datatables.min.js')}}"></script>
 <script src="{{asset('js/vendor/owl.carousel.min.js')}}" ></script>
-<script src="{{asset('js/vendor/nouislider.min.js')}}" ></script>
 <script>
 function initCarousel(){
 if ($(".owl-carousel.dashboard-numbers").length > 0) {
