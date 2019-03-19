@@ -112,7 +112,7 @@ class CustomerController extends Controller
             ]);
          }
 
-         $items = Category::with('items')->whereHas('items', function($q){
+         $items = Category::with('items', 'items.ingredients')->whereHas('items', function($q){
             $q->where('active', '=', 1);
          })->get();
          

@@ -284,7 +284,7 @@ class OrderController extends Controller
         $date = substr($request->date, 0, strpos($request->date, " 00:"));
         $date = date('Y-m-d', strtotime($date));
         
-        $orders = Order::selectRaw("SUM(total_price) as sales, DAY(created_at) as day")
+        $orders = Order::selectRaw("SUM(total_price) as sales, DATE(created_at) as day")
         ->whereRaw("MONTH(created_at) = MONTH('$date')")->groupBy('day')->get();
 
         return response()->json(
