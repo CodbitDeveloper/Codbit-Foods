@@ -15,6 +15,11 @@
             height: 250px;
             object-fit: cover;
         }
+
+        .dn{
+            display: none;
+        }
+
     </style>
 @endsection
 @section('content')
@@ -75,7 +80,10 @@
                             </div>
                         </div>
                         @endforeach
+
                     </div>
+                    
+                    {{$items->links()}}
                 </div>
             </div>
         </div>
@@ -98,12 +106,14 @@
                                     <div class="form-row">
                                         <label class="form-group has-float-label col-12">
                                             <input class="form-control" name="name" id="new-item-name"/>
+                                            <span class="text-small text-danger dn" id="name-error">Enter a name for this item.</span>
                                             <span>Item Name</span>
                                         </label>
                                     </div>
                                     <div class="form-row">
                                         <label class="form-group has-float-label col-12">
-                                            <input class="form-control" type="number" name="price" id="new-item-price"/>
+                                            <input class="form-control" type="number" min="0" name="price" id="new-item-price"/>
+                                            <span class="text-small text-danger dn" id="price-error">Enter a name for this item.</span>
                                             <span>Item Price</span>
                                         </label>
                                     </div>
@@ -115,12 +125,14 @@
                                                     <option value="{{$category->id}}">{{$category->name}}</option>
                                                 @endforeach
                                             </select>
+                                            <span class="text-small text-danger dn" id="category-error">Select a category</span>
                                             <span>Category</span>
                                         </label>
                                     </div>
                                     <div class="form-row mb-3">
                                         <label class="form-group has-float-label col-12">
                                             <textarea class="form-control" rows="4" name="description" id="new-item-description"></textarea>
+                                            <span class="text-small text-danger dn" id="description-error">Enter a description</span>
                                             <span>Description</span>
                                         </label>
                                     </div>
@@ -128,12 +140,15 @@
                                     <div class="form-row">
                                         <label class="form-group has-float-label col-12">
                                         <input data-role="tagsinput" class="form-control" type="text" id="new-item-ingredients">
+                                            <span class="text-small text-danger dn" id="ingredients-error">Provide this meal's major ingredients</span>
                                             <span>Ingredients</span>
                                         </label>
                                     </div>
 
                                     <div class="form-row">
-                                    <div class="col-12 dropzone" id="itemImage"></div>
+                                        <div class="col-12 dropzone" id="itemImage">
+                                        </div>
+                                        <span class="text-small text-danger dn" id="image-error">An image is required</span>
                                     </div>
                                 </div>
                         </div>
@@ -227,13 +242,67 @@
                 $("#submit").on("click", function(e) {
                     // Make sure that the form isn't actually being sent.
                     e.preventDefault();
+                    
+                    $('#image-error').css('display', 'none');
+                    $('#image-error').html('An image is required');
 
-                    if(!$('#new-cat-name').val() == ''){
-                        
+                    var error = false;
+
+                    if($('#new-item-name').val() == '' || $('#new-item-name').val() == null){
+                        $('#name-error').css('display', 'block');
+                        error = true;
+                    }else{
+                        $('#name-error').css('display', 'none');
+                        error = false;
+                    }
+
+                    if($('#new-item-category').val() == '' || $('#new-item-category').val() == null){
+                        $('#category-error').css('display', 'block');
+                        error = true;
+                    }else{
+                        $('#category-error').css('display', 'none');
+                        error = false;
+                    }
+
+                    if($('#new-item-price').val() == '' || $('#new-item-price').val() == null){
+                        $('#price-error').css('display', 'block');
+                        error = true;
+                    }else{
+                        $('#price-error').css('display', 'none');
+                        error = false;
+                    }
+
+                    if($('#new-item-description').val() == '' || $('#new-item-description').val() == null){
+                        $('#description-error').css('display', 'block');
+                        error = true;
+                    }else{
+                        $('#description-error').css('display', 'none');
+                        error = false;
+                    }
+
+                    if($('#new-item-ingredients').val() == '' || $('#new-item-ingredients').val() == null){
+                        $('#ingredients-error').css('display', 'block');
+                        error = true;
+                    }else{
+                        $('#ingredients-error').css('display', 'none');
+                        error = false;
+                    }
+
+                    if(dzClosure.getQueuedFiles().length < 1){
+                        $('#image-error').css('display', 'block');
+                        error = true;
+                    }else{
+                        $('#image-error').css('display', 'none');
+                        error = false;
                     }
                     
-                    $('#submit-all').html('<div class="lds-dual-ring-white"></div>');
-                    dzClosure.processQueue();
+                    if(!error){
+                        $('#submit').prop('disabled', true);
+                        $('#submit').html('<div class="lds-dual-ring-white"></div>');
+                        
+                        dzClosure.processQueue();
+                    }
+                    
                 });
 
                 //send all the form data along with the files:
@@ -246,7 +315,8 @@
                 });
 
                 this.on("success", function(response, responseText){
-                    $('#submit-all').html('Save');
+                    $('#submit').html('Save');
+                    $('#submit').prop('disabled', false);
                     $(".modal").modal('hide');
                     
                     var data = responseText;
@@ -278,10 +348,9 @@
                 });
 
                 this.on('error', function(err, desc){
-                    if(desc.includes("File is too big")){
-                        
-                    }else{
-                        $('#submit-all').html('Save');
+                    if(!desc.includes("File is too big")){
+                        $('#submit').html('Save');
+                        $('#submit').prop('disabled', false);
                         $(".modal").modal('hide');
 
                         console.log(err);
@@ -293,6 +362,9 @@
                                 // settings
                                 type: 'danger'
                         });
+                    }else{
+                        $('#image-error').css('display', 'block');
+                        $('#image-error').html(desc);
                     }
                     
                 });

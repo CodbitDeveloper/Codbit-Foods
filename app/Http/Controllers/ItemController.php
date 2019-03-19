@@ -30,7 +30,7 @@ class ItemController extends Controller
      */
     public function index ()
     {
-        $items      = Item::with('category')->get();
+        $items      = Item::with('category')->paginate(12);
         $categories = Category::all();
 
         return view('items', compact('items', 'categories'));

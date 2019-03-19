@@ -582,7 +582,7 @@ class RestaurantController extends Controller
                     $user->gender    = $request->gender;
                     $user->branch_id = $branch->id;
                     $user->password  = bcrypt('Password');
-                    $user->role      = 'Admin';
+                    $user->role      = 'admin';
         
                     if($user->save()){
                         $result = false;

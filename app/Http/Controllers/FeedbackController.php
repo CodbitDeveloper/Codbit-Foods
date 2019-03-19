@@ -8,6 +8,7 @@ use App\User;
 use App\Notifications\Feedbacks;
 
 use Config;
+use Auth;
 
 use Illuminate\Http\Request;
 
@@ -25,7 +26,13 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        $feedbacks = Feedback::with('customer')->latest()->get()->groupBy('customer_id');
+        if(strtolower(Auth::user()->role) == 'admin'){
+            $feedbacks = Feedback::with('customer', 'responses')->latest()->get()->groupBy('customer_id');
+        }else if(strtolower(Auth::user()->role) == 'manager'){
+            $feedbacks = Feedback::with('customer', 'responses')->where('branch_id', Auth::user()->branch_id)->latest()->get()->groupBy('customer_id');
+        }else{
+            return abort(403);
+        }
         
         return view('feedback', compact('feedbacks'));
     }
