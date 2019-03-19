@@ -40,4 +40,10 @@ class Customer extends Authenticatable
     {
         return $this->belongsToMany('App\Promo', 'customer_promo')->withTimestamps();
     }
+
+    public function responses()
+    {
+        return $this->hasMany(Response::class);
+    }
+    
 }

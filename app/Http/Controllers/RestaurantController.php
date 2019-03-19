@@ -320,6 +320,7 @@ class RestaurantController extends Controller
                 `id` int(10) UNSIGNED NOT NULL,
                 `user_id` int(10) UNSIGNED NOT NULL,
                 `feedback_id` int(10) UNSIGNED NOT NULL,
+                `customer_id` int(10) UNSIGNED NOT NULL,
                 `response` text COLLATE utf8mb4_unicode_ci NOT NULL,
                 `created_at` timestamp NULL DEFAULT NULL,
                 `updated_at` timestamp NULL DEFAULT NULL,
@@ -438,7 +439,8 @@ class RestaurantController extends Controller
             ALTER TABLE `responses`
             ADD PRIMARY KEY (`id`),
             ADD KEY `responses_user_id_foreign` (`user_id`),
-            ADD KEY `responses_feedback_id_foreign` (`feedback_id`);
+            ADD KEY `responses_feedback_id_foreign` (`feedback_id`),
+            ADD KEY `responses_customer_id_foreign` (`customer_id`);
 
             ALTER TABLE `settings`
             ADD PRIMARY KEY (`id`),
@@ -547,6 +549,7 @@ class RestaurantController extends Controller
             ADD CONSTRAINT `orders_payment_type_id_foreign` FOREIGN KEY (`payment_type_id`) REFERENCES `payment_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
             ALTER TABLE `responses`
+            ADD CONSTRAINT `responses_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `responses_feedback_id_foreign` FOREIGN KEY (`feedback_id`) REFERENCES `feedback` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `responses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 

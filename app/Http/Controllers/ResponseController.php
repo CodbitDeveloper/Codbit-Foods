@@ -24,7 +24,9 @@ class ResponseController extends Controller
      */
     public function create()
     {
-        //
+        $response = new Response();
+
+        return view('add-response', compact('response'));
     }
 
     /**
@@ -35,7 +37,32 @@ class ResponseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'user_id' => 'required',
+            'feedback_id' => 'required',
+            'customer_id' => 'required',
+            'response' => 'required'
+        ]);
+
+        $response = new Response();
+
+        $response->user_id = $request->user_id;
+        $response->feedback_id = $request->feedback_id;
+        $response->customer_id = $request->customer_id;
+        $response->response = $request->response;
+
+        if($response->save()){
+            return response()->json([
+                'error' => false,
+                'data' => $response,
+                'message' => 'Response sent'
+            ]);
+        }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'Error sending response'
+            ]);
+        }
     }
 
     /**

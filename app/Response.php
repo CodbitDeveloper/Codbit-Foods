@@ -11,7 +11,7 @@ class Response extends Model
 
     protected $connection = 'mysql2';
 
-    protected $fillable = ['feedback_id', 'response'];
+    protected $fillable = ['user_id', 'feedback_id', 'response'];
 
     public function user()
     {
@@ -21,5 +21,10 @@ class Response extends Model
     public function feedback()
     {
         return $this->belongsTo(Feedback::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 }

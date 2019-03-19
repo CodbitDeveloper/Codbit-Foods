@@ -17,6 +17,7 @@ class CreateResponsesTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('feedback_id')->unsigned();
+            $table->integer('customer_id')->unsigned();
             $table->text('response');
             $table->timestamps();
             $table->softDeletes();
@@ -24,6 +25,8 @@ class CreateResponsesTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')
                   ->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('feedback_id')->references('id')->on('feedback')
+                  ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('customer_id')->references('id')->on('customers')
                   ->onUpdate('cascade')->onDelete('cascade');
         });
     }
