@@ -26,7 +26,9 @@ class PromoController extends Controller
      */
     public function create()
     {
-        return view('add_promo-code');
+        $promo = new Promo();
+
+        return view('add-promo', compact('promo'));
     }
 
     /**
@@ -54,7 +56,6 @@ class PromoController extends Controller
         $promo->max_uses = $request->max_uses;
         $promo->max_uses_customer = $request->max_uses_customer;
         $promo->promo_amount = $request->promo_amount;
-        $promo->create_date = $request->create_date;
         $promo->starts_at = $request->starts_at;
         $promo->expires_at = $request->expires_at;
 

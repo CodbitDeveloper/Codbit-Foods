@@ -63,3 +63,5 @@ Route::prefix('customer')->middleware('cors')->group(function(){
 
 Route::post('/report/order/weekly', 'OrderController@weeklyReport')->name('report.sales.weekly');
 Route::post('/report/order/monthly', 'OrderController@weeklyReport')->name('report.sales.weekly');
+
+Route::post('/deals/add', 'DealController@store')->name('deals.add');

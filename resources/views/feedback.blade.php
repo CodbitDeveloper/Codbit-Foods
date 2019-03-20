@@ -113,6 +113,10 @@
             '<option value="3">3</option>'+'<option value="4">4</option>'+
             '<option value="5">5</option>'+'</select>'+' </div>' + '<div>' +
             '<p class="mb-0 text-semi-muted">'+feed.suggestion+'</p></div></div></div>'+
+            '<div class="col-lg-8 float-right"><div class="card"><div class="card-body">'+
+            '<div class="chat-text-left"><p class="mb-0 text-semi-muted">'+
+            feed.responses[0].response+
+            '</p></div></div></div></div>'+
             '<div class="clearfix"></div>');     
         }
 

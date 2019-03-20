@@ -92,7 +92,7 @@
                         </div>
                         <div class="col-lg-8 col-12">
                             <div class="col-sm-12 mb-4 text-right">
-                                <a href="#">View Receipt</a>
+                                <a href="/invoice/{{$order->id}}">View Receipt</a>
                             </div>
                             @foreach($order->items as $item)
                             <div class="card d-flex flex-row mb-3">

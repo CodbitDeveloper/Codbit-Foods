@@ -46,3 +46,4 @@ Route::get('/branches', 'BranchController@index')->name('branches');
 Route::get('/search', 'SettingController@search')->name('search');
 Route::get('/invoice/{order}', 'OrderController@invoice')->name('invoice');
 Route::get('/reports', 'SettingController@reports')->name('reports');
+Route::get('/deals', 'DealController@index')->name('deals.promotions');

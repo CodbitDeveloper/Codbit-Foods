@@ -65,12 +65,17 @@ class ItemController extends Controller
     public function store (Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
             'price' => 'required|integer',
             'description' => 'required',
             'category_id' => 'required'
         ]);
         
+        if(Item::where('name', $request->name)->get()->count() > 0){
+            return response()->json([
+                'error' => true,
+                'message' => 'Item name already exists. Try Again!'
+            ]);
+        }
 
         $item = new Item();
 
@@ -167,6 +172,13 @@ class ItemController extends Controller
        */
       public function update (Request $request, Item $item)
       {
+        if(Item::where('name', $request->name)->get()->count() > 0){
+            return response()->json([
+                'error' => true,
+                'message' => 'Item name already exists. Try Again!'
+            ]);
+        }
+
          $item->name = $request->name;
          $item->description = $request->description;
          $item->price = $request->price;

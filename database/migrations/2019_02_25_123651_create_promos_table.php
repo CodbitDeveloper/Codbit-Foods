@@ -30,8 +30,6 @@ class CreatePromosTable extends Migration
 
             // Whether or not the voucher is a percentage or a fixed price. 
             $table->boolean('is_fixed')->default(true);
-            // Date the promo is created
-            $table->timestamp('create_date')->nullable();
             // When the promo begins
             $table->timestamp('starts_at')->nullable();
             // When the promo ends

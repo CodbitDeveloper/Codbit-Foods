@@ -31,7 +31,7 @@ class RequestReceived extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['database'];
     }
 
     /**
@@ -57,7 +57,10 @@ class RequestReceived extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'title' => 'New Request',
+            'message' => 'You have a new request from '.$this->request->name,
+            'data' => $this->request,
+            'action' => '/requests'
         ];
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Requests;
+use App\Admin;
+use App\Notifications\RequestReceived;
 use Illuminate\Http\Request;
 
 class RequestsController extends Controller
@@ -52,6 +54,12 @@ class RequestsController extends Controller
         $requests->contact_number = $request->contact_number;
 
         if($requests->save()){
+            $admins = Admin::all();
+
+            foreach($admins as $admin){
+                $admin->notify(new RequestReceived($requests));
+            }
+
             return response()->json([
                 'data' => $requests,
                 'message' => 'Request successfully sent'

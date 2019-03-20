@@ -678,8 +678,8 @@ $.dore = function(element, options) {
         pageLength: 6,
         language: {
           paginate: {
-            previous: "<i class='simple-icon-arrow-left'></i>",
-            next: "<i class='simple-icon-arrow-right'></i>"
+            previous: "<i class='flaticon-right-arrow'></i>",
+            next: "<i class='flaticon-left-arrow'></i>"
           }
         },
 
@@ -700,29 +700,6 @@ $.dore = function(element, options) {
     /* 03.13. Owl carousel */
     function initCarousel(){
       if ($().owlCarousel) {
-        if ($(".owl-carousel.basic").length > 0) {
-          $(".owl-carousel.basic")
-            .owlCarousel({
-              margin: 30,
-              stagePadding: 15,
-              dotsContainer: $(".owl-carousel.basic")
-                .parents(".owl-container")
-                .find(".slider-dot-container"),
-              responsive: {
-                0: {
-                  items: 1
-                },
-                600: {
-                  items: 2
-                },
-                1000: {
-                  items: 3
-                }
-              }
-            })
-            .data("owl.carousel")
-            .onResize();
-        }
 
         if ($(".best-rated-items").length > 0) {
           $(".best-rated-items")

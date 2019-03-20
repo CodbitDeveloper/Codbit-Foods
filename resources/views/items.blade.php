@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="separator mb-5"></div>
-                    <div class="row list disable-text-selection">
+                    <div class="row disable-text-selection">
                         @foreach($items as $item)
                         <div class="col-lg-4 col-sm-6 mb-4">
                             <div class="card">
@@ -56,25 +56,27 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-12">
-                                            <div class="form-group row mb-1 float-right">
-                                                @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
-                                                <div class="col-12">
-                                                    <div class="custom-switch custom-switch-primary mb-2" id="switch-{{$item->id}}">
-                                                        <input class="custom-switch-input" id="input-{{$item->id}}" type="checkbox"  <?php if($item->active == 1){echo "checked";}?> onclick="toggleActive({{$item->id}})"/>
-                                                        <label class="custom-switch-btn" for="input-{{$item->id}}"></label>
+                                        <a href="#">
+                                            <div class="col-12">
+                                                <div class="form-group row mb-1 float-right">
+                                                    @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
+                                                    <div class="col-12">
+                                                        <div class="custom-switch custom-switch-primary mb-2" id="switch-{{$item->id}}">
+                                                            <input class="custom-switch-input" id="input-{{$item->id}}" type="checkbox"  <?php if($item->active == 1){echo "checked";}?> onclick="toggleActive({{$item->id}})"/>
+                                                            <label class="custom-switch-btn" for="input-{{$item->id}}"></label>
+                                                        </div>
+                                                        <div class="lds-dual-ring" id="loader-{{$item->id}}" style="display:none;"></div>
                                                     </div>
-                                                    <div class="lds-dual-ring" id="loader-{{$item->id}}" style="display:none;"></div>
+                                                    @endif
                                                 </div>
-                                                @endif
+                                                <a href="/item/{{$item->id}}">
+                                                    <p class="list-item-heading mb-4">{{$item->name}}</p>
+                                                </a>
+                                                <div class="hidden-text">
+                                                    <span class="text-muted text-small mb-0 font-weight-light">{{$item->description}}</span>
+                                                </div>
                                             </div>
-                                            <a href="/item/{{$item->id}}">
-                                                <p class="list-item-heading mb-4">{{$item->name}}</p>
-                                            </a>
-                                            <div class="hidden-text">
-                                                <span class="text-muted text-small mb-0 font-weight-light">{{$item->description}}</span>
-                                            </div>
-                                        </div>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

@@ -168,7 +168,7 @@
                                     </a>
                                     <div class="pl-2 d-flex flex-grow-1 min-width-zero">
                                         <div class="card-body align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero align-items-lg-center">
-                                            <a href="#" class="w-40 w-sm-100">
+                                            <a href="/order/{{$progress->id}}" class="w-40 w-sm-100">
                                                 <p class="list-item-heading mb-1 truncate">{{$progress->items[0]->name}} @if($progress->items->count() > 1) <span class="text-muted mb-1 text-small">and
                                                         {{$progress->items->count() - 1}} other @if($progress->items->count() > 2)items @else item @endif</span>@endif</p>
                                             </a>
@@ -216,7 +216,7 @@
                                     </a>
                                     <div class="pl-2 d-flex flex-grow-1 min-width-zero">
                                         <div class="card-body align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero align-items-lg-center">
-                                            <a href="#" class="w-40 w-sm-100">
+                                            <a href="/order/{{$completed->id}}" class="w-40 w-sm-100">
                                                 <p class="list-item-heading mb-1 truncate">{{$completed->items[0]->name}} @if($completed->items->count() > 1) <span class="text-muted mb-1 text-small">and
                                                         {{$completed->items->count() - 1}} other @if($completed->items->count() > 2)items @else item @endif</span>@endif</p>
                                             </a>
@@ -264,7 +264,7 @@
                                     </a>
                                     <div class="pl-2 d-flex flex-grow-1 min-width-zero">
                                         <div class="card-body align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero align-items-lg-center">
-                                            <a href="#" class="w-40 w-sm-100">
+                                            <a href="/order/{{$completed->id}}" class="w-40 w-sm-100">
                                                 <p class="list-item-heading mb-1 truncate">{{$completed->items[0]->name}} @if($completed->items->count() > 1) <span class="text-muted mb-1 text-small">and
                                                         {{$completed->items->count() - 1}} other @if($completed->items->count() > 2)items @else item @endif</span>@endif</p>
                                             </a>

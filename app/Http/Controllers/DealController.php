@@ -3,6 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Deal;
+use App\Promo;
+use App\Utils;
+
+use Config;
+use Carbon\Carbon;
+
 use Illuminate\Http\Request;
 
 class DealController extends Controller
@@ -10,7 +16,7 @@ class DealController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        Config('database.connections.mysql2.database', session('db_name'));
+        Config::set('database.connections.mysql2.database', session('db_name'));
     }
 
    /**
@@ -21,8 +27,19 @@ class DealController extends Controller
     public function index()
     {
         $deals = Deal::all();
+        $promotions = Promo::all();
+        $date = Carbon::now()->format('Y-m-d');
+        
+        $ongoing_deals = $deals->filter(function($deal) use ($date){
+            return (strtotime($deal->starts_at) <= strtotime($date)) && (strtotime($deal->expires_at) >= strtotime($date));
+        });
 
-        return view('deals')->with('deals', $deals);
+        $ongoing_promotions = $promotions->filter(function($promo) use ($date){
+            return ($promo->starts_at <= $date) && ($promo->expires_at >= $date);
+        });
+
+        return view('deals')->with('deals', $deals)->with('promotions', $promotions)
+        ->with('ongoing_deals', $ongoing_deals)->with('ongoing_promotions', $ongoing_promotions);
     }
 
     public function all_deal()
@@ -56,7 +73,7 @@ class DealController extends Controller
     public function store(Request $request)
     {
         if($request->hasFile('file')){
-            $fileName = Utils::saveImageFromDz($request, 'file', 'img/deals');
+            $fileName = Utils::saveImageFromDz($request, 'file', 'img/deals_promotions');
 
             $deal = Deal::create([
                "title" => $request->title,
@@ -72,6 +89,11 @@ class DealController extends Controller
                'id' => $deal->id,
                'message' => $deal ? 'Deal Created!' : 'Error Creating Deal'
             ]);
+         }else{
+             return response()->json([
+                 'error' => true,
+                 'message' => 'No image provided'
+             ]);
          }
 
 
@@ -126,8 +148,13 @@ class DealController extends Controller
         $deal->expires_at = $request->expires_at;
        
         if($request->hasFile('file')){
-            $fileName = Utils::saveImageFromDz($request, 'file', 'img/deals');
+            $fileName = Utils::saveImageFromDz($request, 'file', 'img/deals_promotions');
             $deal->image = $fileName;
+        }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'No image provided'
+            ]);
         }
 
         $status = $deal->update();

@@ -309,7 +309,6 @@ class RestaurantController extends Controller
                 `promo_amount` int(11) NOT NULL,
                 `is_active` tinyint(1) NOT NULL DEFAULT '1',
                 `is_fixed` tinyint(1) NOT NULL DEFAULT '1',
-                `create_date` timestamp NULL DEFAULT NULL,
                 `starts_at` timestamp NULL DEFAULT NULL,
                 `expires_at` timestamp NULL DEFAULT NULL,
                 `created_at` timestamp NULL DEFAULT NULL,

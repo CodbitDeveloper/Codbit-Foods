@@ -82,7 +82,7 @@ class CategoryController extends Controller
         if(Category::where('name', $request->name)->get()->count() > 0){
             return response()->json([
                 'error' => true,
-                'message' => 'Category name already exists!'
+                'message' => 'Category name already exists. Try again!'
             ]);
         }
 

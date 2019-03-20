@@ -56,38 +56,20 @@
                     <button class="header-icon btn btn-empty" type="button" id="notificationButton" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                         <i class="simple-icon-bell"></i>
-                        <span class="count">3</span>
+                        <span class="count">{{Auth::user()->unreadNotifications->count()}}</span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right mt-3 scroll position-absolute" id="notificationDropdown">
-
+                        @foreach(Auth::user()->unreadNotifications as $notification)
                         <div class="d-flex flex-row mb-3 pb-3 border-bottom">
                             <div class="pl-3 pr-2">
-                                <a href="#">
-                                    <p class="font-weight-medium mb-1">General Mosquito just placed a request for to
-                                        register his restaurant</p>
-                                    <p class="text-muted mb-0 text-small">09.04.2019 - 12:45</p>
+                                <a href="{{$notification->data['action']}}">
+                                    <h6><b>{{$notification->data['title']}}</b></h6>
+                                    <p class="mb-1 text-muted">{{$notification->data['message']}}</p>
+                                    <p class="text-muted mb-0 text-small text-right"><i>{{Carbon\Carbon::parse($notification->created_at)->diffForHumans()}}</i></p>
                                 </a>
                             </div>
                         </div>
-
-                        <div class="d-flex flex-row mb-3 pb-3 border-bottom">
-                            <div class="pl-3 pr-2">
-                                <a href="#">
-                                    <p class="font-weight-medium mb-1">K Mole has requested for a password reset</p>
-                                    <p class="text-muted mb-0 text-small">09.04.2019 - 12:45</p>
-                                </a>
-                            </div>
-                        </div>
-
-
-                        <div class="d-flex flex-row mb-3 pb-3 border-bottom">
-                            <div class="pl-3 pr-2">
-                                <a href="#">
-                                    <p class="font-weight-medium mb-1">New client email received</p>
-                                    <p class="text-muted mb-0 text-small">09.04.2019 - 12:45</p>
-                                </a>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
 
@@ -180,6 +162,14 @@
                         <a href="/feedback">
                             <i class="simple-icon-speech"></i>
                             <span>Customer Feedback</span>
+                        </a>
+                    </li>
+                    @endif
+                    @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
+                    <li class="<?php if($page=='deals'){echo 'active'; } ?>" >
+                        <a href="/deals">
+                            <i class="simple-icon-tag"></i>
+                            <span>Deals and Promotions</span>
                         </a>
                     </li>
                     @endif
