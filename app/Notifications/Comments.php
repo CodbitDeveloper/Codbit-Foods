@@ -58,7 +58,7 @@ class Comments extends Notification
     {
         return [
             'title' => 'New Comment',
-            'message' => 'You have received a new comment on '.$this->request->item_id.' from '.$this->request->customer_id,
+            'message' => 'You have received a new comment on '.$this->request->item->name.' from '.$this->request->customer->firstname.' '.$this->request->customer->lastname,
             'data' => $this->request,
             'action' => '/comments'
         ];
