@@ -96,7 +96,7 @@
                                     </div>
                                     <div class="form-group col-md-4 col-sm-12">
                                         <label>Maximum uses per user</label>
-                                        <input type="number" name="amount" class="form-control" name="max_uses_user" required/>
+                                        <input type="number" class="form-control" name="max_uses_user" required/>
                                         <span class="text-small text-muted hint"><i>Enter -1 if a user can use it unlimited times till it expires</i></span>
                                     </div>
                                 </div>
@@ -165,7 +165,7 @@
                                                 @foreach($categories as $category)
                                                 <optgroup label="{{$category->name}}">
                                                     @foreach($category->items as $item)
-                                                        <option value="$item->id">{{$item->name}}</option>
+                                                        <option value="{{$item->id}}">{{$item->name}}</option>
                                                     @endforeach
                                                 </optgroup>
                                                 @endforeach
@@ -198,7 +198,7 @@
                 format: 'yyyy-mm-dd'
             });
 
-            $('#promo-image').dropzone({
+        var drp =   new Dropzone('#promo-image', {
                 url: '/api/promo/add',
                 autoProcessQueue: false,
                 uploadMultiple: true,
@@ -211,42 +211,19 @@
                 init: function() {
                     dzClosure = this; // Makes sure that 'this' is understood inside the functions below.
 
-                    // for Dropzone to process the queue (instead of default form behavior):
-                    $("#new-promo").on("submit", function(e) {
-                        // Make sure that the form isn't actually being sent.
-                        e.preventDefault();
-
-                        var error = false;
-                        $(this).find('input, textarea, select').each(function(){
-                            if($(this).val() == '' || $(this).val() == null){
-                                error = true;
-                            }else{
-                                error = false;
-                            }
-                        });
-
-                        if(dzClosure.getQueuedFiles().length < 1){
-                            $('#image-error').css('display', 'block');
-                            error = true;
-                        }else{
-                            $('#image-error').css('display', 'none');
-                            error = false;
-                        }
-                        
-                        if(!error){
-                            $('#submit-deal').prop('disabled', true);
-                            $('#submit-deal').html('<div class="lds-dual-ring-white"></div>');
-                            
-                            dzClosure.processQueue();
-                        }
-                        
-                    });
-
                     //send all the form data along with the files:
                     this.on("sendingmultiple", function(data, xhr, formData) {
                         $('#new-promo').find('input, textarea, select').each(function(){
                             formData.append($(this).attr('name'), $(this).val())
                         });
+
+                        if($('#customer-search').prop('disabled') == true){
+                            formData.append('all_customers', true);
+                        }
+
+                        if( $('#item-search').prop('disabled') == true){
+                            formData.append('all_items', true);
+                        }
                         
                     });
 
@@ -276,9 +253,6 @@
 
                             dzClosure.removeAllFiles();
                             $("#new-promo").trigger('reset');
-                            setTimeout(function(){
-                                    location.reload();
-                                }, 500);
                         }
                     });
 
@@ -294,11 +268,11 @@
                                     // settings
                                     type: 'danger'
                             });
-                        }
-                        
-                        if(desc.indexOf("File is too big") > -1){
-                            $('#image-error').css('display', 'block');
-                            $('#image-error').html(desc);
+                        }else{
+                            if(desc.indexOf("File is too big") > -1){
+                                $('#image-error').css('display', 'block');
+                                $('#image-error').html(desc);
+                            }
                         }
 
                         $.each(dzClosure.files, function(i, file){
@@ -315,8 +289,10 @@
 
                 if(el.prop('checked')){
                     $('#customer-search').css('display', 'none');
+                    $('#customer-search').prop('disabled', true);
                 }else{
                     $('#customer-search').css('display', 'block');
+                    $('#customer-search').prop('disabled', false);
                 }
             });
 
@@ -325,9 +301,42 @@
 
                 if(el.prop('checked')){
                     $('#item-search').css('display', 'none');
+                    $('#item-search').prop('disabled', true);
                 }else{
                     $('#item-search').css('display', 'block');
+                    $('#item-search').prop('disabled', false);
                 }
-            })
+            });
+
+            $("#new-promo").on("submit", function(e) {
+                    // Make sure that the form isn't actually being sent.
+                    e.preventDefault();
+
+                    var error = false;
+                    $(this).find('input, textarea, select').each(function(){
+                        if($(this).val() == '' || $(this).val() == null){
+                            error = true;
+                        }else{
+                            error = false;
+                        }
+                    });
+
+                    if(drp.getQueuedFiles().length < 1){
+                        $('#image-error').css('display', 'block');
+                        error = true;
+                    }else{
+                        $('#image-error').css('display', 'none');
+                        error = false;
+                    }
+                    
+                    if(!error){
+                        $('#submit-deal').prop('disabled', true);
+                        $('#submit-deal').html('<div class="lds-dual-ring-white"></div>');
+                            
+                        drp.processQueue();
+                    }
+                        
+                });
+
     </script>
 @endsection

@@ -403,7 +403,7 @@
                                         </div>
                                         <div class="form-row mb-4">
                                             <label class="form-group has-float-label col-6">
-                                                <input class="form-control" type="number" value="1" id="cart-quantity" />
+                                                <input class="form-control" type="number" min="1" value="1" id="cart-quantity" />
                                                 <span>Quantity</span>
                                             </label>
                                             <div class="col-6">

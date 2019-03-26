@@ -27,6 +27,27 @@
                     </div>
 
                     <div class="separator mb-5"></div>
+                    @if($dispatches->count() < 1)
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="jumbotron">
+                                            <h2 class="display-4">No dispatch riders</h2>
+                                            <p class="lead">Manage your restaurant's courier services</p>
+                                            <hr class="my-4">
+                                            <p>
+                                                Add all your dispatch riders here. You can then assign a dispatch rider to your various orders. 
+                                            </p>
+                                            <p class="lead  mb-0">
+                                                <a class="btn btn-primary btn-lg" href="#" data-toggle="modal" data-target="#newUserModal" role="button">Create New</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
                     <div class="row list disable-text-selection" id="dispatch-list">
                         @foreach($dispatches as $dispatch)
                         <div class="col-lg-4 col-sm-12 mb-4">
@@ -51,6 +72,7 @@
                         </div>
                         @endforeach()
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

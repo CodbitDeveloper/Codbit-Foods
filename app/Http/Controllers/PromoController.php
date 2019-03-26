@@ -59,28 +59,67 @@ class PromoController extends Controller
             'promo_amount' => 'required',
         ]);
 
+        if(Promo::where('code', $request->code)->get()->count() > 0){
+            return response()->json([
+                'error' => true,
+                'message' => 'The promo code specified has already been used'
+            ]);
+        }
+
+        if($request->max_uses < -1 || $request->max_uses_user == 0){
+            return response()->json([
+                'error' => true,
+                'message' => 'Invalid maximum uses specified'
+            ]);
+        }
+
+        if($request->max_uses_user < -1){
+            return response()->json([
+                'error' => true,
+                'message' => 'Invalid maximum uses per customer specified'
+            ]);
+        }
+
         $promo = new Promo();
 
         $promo->name = $request->name;
         $promo->code = $request->code;
         $promo->description = $request->description;
         $promo->max_uses = $request->max_uses;
-        $promo->max_uses_customer = $request->max_uses_customer;
+        $promo->max_uses_customer = $request->max_uses_user;
         $promo->promo_amount = $request->promo_amount;
         $promo->starts_at = $request->starts_at;
         $promo->expires_at = $request->expires_at;
 
         if($promo->save()){
-            $items = json_decode($request->items, true);
-            $customers = json_decode($request->customers, true);
+            if($request->all_customers == true){
+                $items = Item::all();
+                $items->pluck('id')->toArray();
+            }else{
+                $items = explode(',', $request->items);
+            }
 
+            if($request->all_items == true){
+                $customers = Customer::all();
+                $customers->pluck('id')->toArray();
+            }else{
+                $customers = explode(',', $request->customers);
+            }
+            
             $promo->items()->attach($items);
             $promo->customers()->attach($customers);
 
             return response()->json([
-
+                'error' => false,
+                'message' => 'Promo created'
+                
             ]);
         }
+
+        return response()->json([
+            'error' => true,
+            'message' => 'Could not create the promo'
+        ]);
         
     }
 
