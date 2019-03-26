@@ -255,7 +255,9 @@
 
                         dzClosure.removeAllFiles();
                         $("#new-category-form").trigger('reset');
-                        $("#category-list").append('<div class="col-xs-6 col-lg-4 col-12 mb-4"><div class="card bg-dark text-white"><img class="card-img br-8" src="img/categories/'+data.data.image+'" alt="Card image"><div class="card-img-overlay br8"><div class="position-relative mb-3"><a href="#" class="badge badge-pill badge-theme-1 cursor">EDIT</a></div><h1><b>'+data.data.name+'</b></h1></div></div></div>');
+                        $("#category-list").append('<div class="col-xs-6 col-lg-4 col-12 mb-4"><div class="card bg-dark text-white"><img class="card-img br-8" src="img/categories/'+data.data.image+'" alt="Card image"><div class="card-img-overlay br8">'
+                        +'<div class="position-relative mb-3"><a href="#" class="badge badge-pill badge-theme-2 cursor" onclick="editCategory('+JSON.stringify(data.data)+')">EDIT</a>'+
+                        '<a href="#" class="badge badge-pill badge-theme-1 cursor" onclick="deleteCategory('+JSON.stringify(data.data)+')">DELETE</a></div><h1><b>'+data.data.name+'</b></h1></div></div></div>');
                     }
                 });
 

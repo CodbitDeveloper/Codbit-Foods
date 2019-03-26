@@ -9,6 +9,7 @@ use App\Item;
 use App\User;
 use App\Admin;
 use App\Notifications\IncomingOrder;
+use App\paymentType;
 
 use Illuminate\Http\Request;
 use Config;
@@ -37,7 +38,9 @@ class OrderController extends Controller
                 $q = Item::where('active', 1)->get();
             }
             )->get();
-            return view('orders',compact('orders', 'categories', 'customers'));
+            $payment_types = paymentType::all();
+
+            return view('orders',compact('orders', 'categories', 'customers', 'payment_types'));
         }else{
             $orders = Order::with('customer')->where('branch_id', Auth::user()->branch_id)->latest()->get()->groupBy('status');
             $customers = Customer::all();
@@ -46,7 +49,9 @@ class OrderController extends Controller
             $q = Item::where('active', 1)->get();
             }
             )->get();
-            return view('orders',compact('orders', 'categories', 'customers'));
+            $payment_types = paymentType::all();
+
+            return view('orders',compact('orders', 'categories', 'customers', 'payment_types'));
         }
         /*return response()->json([
             'orders' => $orders
@@ -113,7 +118,8 @@ class OrderController extends Controller
         $request->validate([
             'items' => 'required',
             'total' => 'required',
-            'branch_id' => 'required'
+            'branch_id' => 'required',
+            'payment_type_id' => 'required'
         ]);
 
         if($request->customer_id == null){
@@ -144,7 +150,7 @@ class OrderController extends Controller
         $order->to_be_delivered = false;
         $order->status = "In-Progress";
         $order->has_paid = 1;
-        $order->payment_type_id = 4;
+        $order->payment_type_id = $request->payment_type_id;
         $order->branch_id = $request->branch_id;
 
         if($order->save()){
