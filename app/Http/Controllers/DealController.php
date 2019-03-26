@@ -34,12 +34,8 @@ class DealController extends Controller
             return (strtotime($deal->starts_at) <= strtotime($date)) && (strtotime($deal->expires_at) >= strtotime($date));
         });
 
-        $ongoing_promotions = $promotions->filter(function($promo) use ($date){
-            return ($promo->starts_at <= $date) && ($promo->expires_at >= $date);
-        });
-
         return view('deals')->with('deals', $deals)->with('promotions', $promotions)
-        ->with('ongoing_deals', $ongoing_deals)->with('ongoing_promotions', $ongoing_promotions);
+        ->with('ongoing_deals', $ongoing_deals);
     }
 
     public function all_deal()

@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="{{asset('css/vendor/select2.min.css')}}" />
     <link rel="stylesheet" href="{{asset('css/vendor/select2-bootstrap.min.css')}}" />
     <link rel="stylesheet" href="{{asset('css/vendor/bootstrap-float-label.min.css')}}" />
+    <link rel="stylesheet" href="{{asset('css/vendor/dropzone.min.css')}}" />
 @endsection
 @section('content')
         <div class="container-fluid">

@@ -65,3 +65,4 @@ Route::post('/report/order/weekly', 'OrderController@weeklyReport')->name('repor
 Route::post('/report/order/monthly', 'OrderController@weeklyReport')->name('report.sales.weekly');
 
 Route::post('/deals/add', 'DealController@store')->name('deals.add');
+Route::post('/promo/add', 'PromoController@store')->name('promo.add');

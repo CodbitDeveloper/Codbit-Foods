@@ -4,11 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Promo;
 use App\Item;
+
 use App\Customer;
+use App\Category;
+
+use Config;
 use Illuminate\Http\Request;
 
 class PromoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        Config::set('database.connections.mysql2.database', session('db_name'));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -26,9 +36,10 @@ class PromoController extends Controller
      */
     public function create()
     {
-        $promo = new Promo();
+        $customers = Customer::all();
+        $categories = Category::with('items')->get();
 
-        return view('add-promo', compact('promo'));
+        return view('add-promotion', compact('customers', 'categories'));
     }
 
     /**
@@ -61,7 +72,7 @@ class PromoController extends Controller
 
         if($promo->save()){
             $items = json_decode($request->items, true);
-            $customers = \json_decode($request->customers, true);
+            $customers = json_decode($request->customers, true);
 
             $promo->items()->attach($items);
             $promo->customers()->attach($customers);

@@ -140,8 +140,8 @@ class CustomerController extends Controller
             $user->phone = $request->phone;
             $user->firstname = '';
             $user->lastname = '';
-            $user->token = '';
-            $user->password = '';
+            $user->email = '';
+            
             if($user->save()){
                return response()->json([
                   'error' => false,

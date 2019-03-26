@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{asset('css/vendor/bootstrap.min.css')}}" />
     <link rel="stylesheet" href="{{asset('css/vendor/perfect-scrollbar.css')}}" />
     <link rel="stylesheet" href="{{asset('css/main.css')}}" />
+    <link rel="stylesheet" href="{{asset('font/dashboard-icons/flaticon.css')}}"/>
     <style>
         .round{
             border-radius: 50%;
@@ -109,26 +110,26 @@
                 <ul class="list-unstyled">
                     <li class="<?php if($page=='dashboard'){echo 'active'; } ?>" >
                         <a href="/home">
-                            <i class="simple-icon-home"></i>
+                            <i class="flaticon-dashboard"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li class="<?php if($page=='orders'){echo 'active'; } ?>" >
                         <a href="/orders">
-                            <i class="simple-icon-basket"></i>
+                            <i class="flaticon-order"></i>
                             <span>Orders</span>
                         </a>
                     </li>
                     <li class="<?php if($page=='items'){echo 'active'; } ?>" >
                         <a href="/menu">
-                            <i class="simple-icon-cup"></i>
+                            <i class="flaticon-food"></i>
                             <span>Menu</span>
                         </a>
                     </li>
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='categories'){echo 'active'; } ?>" >
                         <a href="/categories">
-                            <i class="simple-icon-grid"></i>
+                            <i class="flaticon-list"></i>
                             <span>Categories</span>
                         </a>
                     </li>
@@ -136,7 +137,7 @@
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='employees'){echo 'active'; } ?>" >
                         <a href="/employees">
-                            <i class="simple-icon-people"></i>
+                            <i class="flaticon-avatar"></i>
                             <span>Employees</span>
                         </a>
                     </li>
@@ -144,7 +145,7 @@
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='branches'){echo 'active'; } ?>" >
                         <a href="/branches">
-                            <i class="simple-icon-directions"></i>
+                            <i class="flaticon-shop"></i>
                             <span>Branches</span>
                         </a>
                     </li>
@@ -152,7 +153,7 @@
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='reports'){echo 'active'; } ?>" >
                         <a href="/reports">
-                            <i class="simple-icon-chart"></i>
+                            <i class="flaticon-graphic"></i>
                             <span>Reports</span>
                         </a>
                     </li>
@@ -160,7 +161,7 @@
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='feedback'){echo 'active'; } ?>" >
                         <a href="/feedback">
-                            <i class="simple-icon-speech"></i>
+                            <i class="flaticon-heart"></i>
                             <span>Customer Feedback</span>
                         </a>
                     </li>
@@ -168,7 +169,7 @@
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='deals'){echo 'active'; } ?>" >
                         <a href="/deals">
-                            <i class="simple-icon-tag"></i>
+                            <i class="flaticon-handshake"></i>
                             <span>Deals and Promotions</span>
                         </a>
                     </li>
