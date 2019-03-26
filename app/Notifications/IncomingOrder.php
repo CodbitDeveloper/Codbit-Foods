@@ -58,7 +58,7 @@ class IncomingOrder extends Notification
     {
         return [
             'title' => 'New Order',
-            'message' => 'You have received a new order from '.$this->request->customer_id,
+            'message' => 'You have received a new order from '.$this->request->customer->firstname.' '.$this->request->customer->lastname,
             'data' => $this->request,
             'action' => '/orders'
         ];

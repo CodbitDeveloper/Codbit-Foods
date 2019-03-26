@@ -58,7 +58,7 @@ class Feedbacks extends Notification
     {
         return [
             'title' => 'New Feedback',
-            'message' => 'You have received a new feedback from '.$this->request->customer_id,
+            'message' => 'You have received a new feedback from '.$this->request->customer->firstname.' '.$this->request->customer->lastname,
             'data' => $this->request,
             'action' => '/feedbacks'
         ];

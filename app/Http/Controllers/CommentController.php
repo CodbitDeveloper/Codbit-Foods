@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Comment;
 use App\Item;
 use App\User;
+use App\Customer;
+
 use Illuminate\Http\Request;
 use App\Notifications\Comments;
 
@@ -78,7 +80,13 @@ class CommentController extends Controller
         $comment->ratings = $request->ratings;
         
         if($comment->save()){
-            $users = User::where([['role', '=', 'admin'], ['branch_id', '=', $request->branch_id]])->orWhere('role', '=', 'Manager')->get();
+            $item = Item::where('id', $comment->item_id)->first();
+            $comment->item = $item;
+
+            $customer = Customer::where('id', $comment->customer_id)->first();
+            $comment->customer = $customer;
+
+            $users = User::where('role', '=', 'admin')->orWhere([['role', '=', 'Manager'], ['branch_id', '=', $request->branch_id]])->get();
 
             foreach($users as $user){
                 $user->notify(new Comments($comment));

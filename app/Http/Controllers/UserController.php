@@ -22,11 +22,14 @@ class UserController extends Controller
 
     public function index ()
       {
-        $users = User::all();
-        $branches = Branch::all();
-
-        if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager'){
+        if(strtolower(Auth::user()->role) == 'admin'){
+          $users = User::all();
+          $branches = Branch::all();
           return view('employees')->with('users', $users)->with('branches', $branches);
+         }elseif (strtolower(Auth::user()->role) == 'manager') {
+           $branches = Branch::where('id', Auth::user()->branch_id)->get();
+           $users = User::where('branch_id', Auth::user()->branch_id)->get();
+           return view('employees')->with('users', $users)->with('branches', $branches);
          }else{
            return abort(403);
          }

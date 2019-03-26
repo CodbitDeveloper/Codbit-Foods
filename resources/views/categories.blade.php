@@ -97,9 +97,11 @@
                         </div>
                         @endforeach()
                     </div>
+                    {{$categories->links()}}
                 </div>
             </div>
         </div>
+        
         <div class="modal fade modal-right" id="newCategoryModal" role="dialog" aria-labelledby="newCategoryModalLabel"
             aria-hidden="true">
             <div class="modal-dialog" role="document">

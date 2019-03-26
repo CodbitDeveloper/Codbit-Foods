@@ -111,6 +111,7 @@
                             @endif
                         </div>
                         <div class="row">
+                            @if(strtolower(Auth::user()->role) == 'admin')
                             <div class="col-lg-4 col-sm-12">
                                 <div class="card pt-4">
                                     <div class="card-header">
@@ -147,6 +148,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                             <div class="col-lg-8 col-sm-12">
                                 @if($deals->count() > 0)
                                 <div class="pt-4">
@@ -172,7 +174,7 @@
                                                     <div class="w-15 w-sm-100 text-right">
                                                         &nbsp;
                                                     </div>
-                                                    
+                                                    @if(strtolower(Auth::user()->role) == 'admin')
                                                     <div class="w-15 w-sm-100 text-right">
                                                         <div class="btn-group float-right mr-1 mb-1">
                                                             <button class="btn btn-light btn-xs dropdown-toggle" type="button"
@@ -184,6 +186,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    @endif
                                                 </div>
 
                                                 <div class=" pl-1 align-self-center pr-4">
@@ -298,8 +301,7 @@
 
 @section('customjs')
     <script>
-        function initCarousel(){
-            if ($(".owl-carousel.basic").length > 0) {
+        if ($(".owl-carousel.basic").length > 0) {
           $(".owl-carousel.basic")
             .owlCarousel({
               margin: 30,
@@ -322,10 +324,9 @@
             .data("owl.carousel")
             .onResize();
             }
-        }
+        
 
         $(document).ready(function(){
-            initCarousel();
 
             Dropzone.autoDiscover = false;
 

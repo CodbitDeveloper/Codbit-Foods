@@ -172,7 +172,7 @@
                                                 <p class="list-item-heading mb-1 truncate">{{$progress->items[0]->name}} @if($progress->items->count() > 1) <span class="text-muted mb-1 text-small">and
                                                         {{$progress->items->count() - 1}} other @if($progress->items->count() > 2)items @else item @endif</span>@endif</p>
                                             </a>
-                                            <p class="mb-1 text-small w-20 w-sm-100"><a href="#">{{$progress->customer->firstname.' '.$pending->customer->lastname}}</a></p>
+                                            <p class="mb-1 text-small w-20 w-sm-100"><a href="#">{{$progress->customer->firstname.' '.$progress->customer->lastname}}</a></p>
                                             <p class="mb-1 mr-1 text-muted text-small w-20 w-sm-100 truncate">{{$progress->address}}</p>
                                             <p class="mb-1 text-muted text-small text-right w-15 w-sm-100">{{Carbon\Carbon::parse($progress->created_at)->diffForHumans()}}</p>
                                             <div class="w-15 w-sm-100 text-right">

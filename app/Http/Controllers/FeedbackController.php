@@ -70,7 +70,10 @@ class FeedbackController extends Controller
         $feedback->ratings = $request->ratings;
 
         if($feedback->save()){
-            $users = User::where([['role', 'admin'], ['branch_id', $request->branch_id]])->orWhere('role', 'Manager')->get();
+            $customer = Customer::where('id', $feedback->customer_id)->first();
+            $feedback->customer = $customer;
+            
+            $users = User::where('role', 'admin')->orWhere([['role', 'Manager'], ['branch_id', $request->branch_id]])->get();
 
             foreach($users as $user){
                 $user->notify(new Feedbacks($feedback));

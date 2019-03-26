@@ -66,3 +66,6 @@ Route::post('/report/order/monthly', 'OrderController@weeklyReport')->name('repo
 
 Route::post('/deals/add', 'DealController@store')->name('deals.add');
 Route::post('/promo/add', 'PromoController@store')->name('promo.add');
+
+Route::post('/dispatch/add', 'DispatchController@store')->name('dispatch.add');
+Route::put('/dispatch/edit', 'DispatchController@update')->name('dispatch.edit');

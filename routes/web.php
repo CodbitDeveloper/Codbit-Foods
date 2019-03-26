@@ -48,3 +48,5 @@ Route::get('/invoice/{order}', 'OrderController@invoice')->name('invoice');
 Route::get('/reports', 'SettingController@reports')->name('reports');
 Route::get('/deals', 'DealController@index')->name('deals.promotions');
 Route::get('/add-promo', 'PromoController@create')->name('promos.add');
+
+Route::get('/dispatch', 'DispatchController@index')->name('dispatch');

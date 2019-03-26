@@ -12,6 +12,7 @@ use App\Notifications\IncomingOrder;
 
 use Illuminate\Http\Request;
 use Config;
+use Auth;
 
 class OrderController extends Controller
 {
@@ -28,14 +29,25 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('customer')->latest()->get()->groupBy('status');
-        $customers = Customer::all();
-        $categories = Category::with('items')->whereHas(
+        if(strtolower(Auth::user()->role) == 'admin'){
+            $orders = Order::with('customer')->latest()->get()->groupBy('status');
+            $customers = Customer::all();
+            $categories = Category::with('items')->whereHas(
             'items', function($q){
                 $q = Item::where('active', 1)->get();
             }
-        )->get();
-        return view('orders',compact('orders', 'categories', 'customers'));
+            )->get();
+            return view('orders',compact('orders', 'categories', 'customers'));
+        }else{
+            $orders = Order::with('customer')->where('branch_id', Auth::user()->branch_id)->latest()->get()->groupBy('status');
+            $customers = Customer::all();
+            $categories = Category::with('items')->whereHas(
+            'items', function($q){
+            $q = Item::where('active', 1)->get();
+            }
+            )->get();
+            return view('orders',compact('orders', 'categories', 'customers'));
+        }
         /*return response()->json([
             'orders' => $orders
         ]);*/
@@ -139,8 +151,10 @@ class OrderController extends Controller
             $items = json_decode($request->items, true);
 
             $order->items()->attach($items);
-
-            $users = User::where([['role', 'admin'], ['branch_id', $request->branch_id]])->orWhere('role', 'Manager')->get();
+            $customer = Customer::where('id', $order->customer_id)->first();
+            $order->customer = $customer;
+            
+            $users = User::where('role', 'admin')->orWhere([['role', 'Manager'], ['branch_id', $request->branch_id]])->get();
 
             foreach($users as $user){
                 $user->notify(new IncomingOrder($order));

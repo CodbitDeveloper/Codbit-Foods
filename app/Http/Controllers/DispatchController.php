@@ -24,7 +24,7 @@ class DispatchController extends Controller
     {
         $dispatches = Dispatch::all();
 
-        return view('dispatch-index')->with('dispatches', $dispatches);
+        return view('dispatch')->with('dispatches', $dispatches);
     }
 
     public function all_dispatches()
@@ -74,7 +74,7 @@ class DispatchController extends Controller
             return response()->json([
                 'error' => false,
                 'data' => $dispatch,
-                'message' => 'Dispatch Rider created successfullly'
+                'message' => 'Dispatch Rider created successfully'
              ], 201);
          }else{
             return response()->json([
@@ -118,13 +118,27 @@ class DispatchController extends Controller
      */
     public function update(Request $request, Dispatch $dispatch)
     {
-        $status = $dispatch->update(
-            $request->only(['firstname', 'lastname', 'phone'])
-        );
+        $request->validate([
+            'id' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'phone' => 'required'
+        ]);
+
+        $dispatch = Dispatch::where('id', $request->id)->first();
+        $error = true;
+
+        $dispatch->firstname = $request->firstname;
+        $dispatch->lastname = $request->lastname;
+        $dispatch->phone = $request->phone;
+
+        if($dispatch->update()){
+            $status = false;
+        }
 
         return response()->json([
-            'data' => $dispatch,
-            'message' => $status ? 'Dispatch Rider Updated' : 'Error updating dispatch rider'
+            'error' => $status,
+            'message' => !$status ? 'Dispatch Rider Updated' : 'Error updating dispatch rider'
         ]);
         
     }

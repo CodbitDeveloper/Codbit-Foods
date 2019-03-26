@@ -174,6 +174,14 @@
                         </a>
                     </li>
                     @endif
+                    @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
+                    <li class="<?php if($page=='dispatch'){echo 'active'; } ?>" >
+                        <a href="/dispatch">
+                            <i class="simple-icon-people"></i>
+                            <span>Dispatch</span>
+                        </a>
+                    </li>
+                    @endif
                     <li class="<?php if($page==''){echo 'active'; } ?>" style="display:none">
                         <a href="#">
                             
