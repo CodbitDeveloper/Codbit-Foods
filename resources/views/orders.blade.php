@@ -410,7 +410,7 @@
                                                 <button type="button" class="btn btn-primary btn-block" id="add-to-cart"><b>ADD</b></button>
                                             </div>
                                         </div>
-                                        <table class="data-table responsive nowrap mb-3" id="cart-table" data-order="[[ 1, &quot;desc&quot; ]]">
+                                        <table class="data-table responsive nowrap mb-4" id="cart-table" data-order="[[ 1, &quot;desc&quot; ]]">
                                             <thead>
                                                 <tr>
                                                     <th>Name</th>
@@ -422,6 +422,17 @@
                                             <tbody>
                                             </tbody>
                                         </table>
+                                            <div class="col-12 mb-2">
+                                                <div class="input-group">
+                                                    <select class="form-control select2-single mb-1" id="payment_type">
+                                                        <option selected disabled hidden>Payment type</option>
+                                                        @foreach($payment_types as $pt)
+                                                            <option value="{{$pt->id}}">{{$pt->name}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <span class="text-small text-danger dn" id="pt-error">Select a payment type</span>
+                                                </div>
+                                            </div>
                                         <div class="col-12">
                                             <div class="form-row">
                                                 <label class="form-group has-float-label col-12">
@@ -554,6 +565,14 @@
                     }else{
                         $('#phone-error').css('display', 'none');
                     }
+
+                    if($('#payment_type').val() == ''){
+                        $('#pt-error').css('display', 'block');
+                        return false;
+                    }else{
+                        $('#pt-error').css('display', 'none');
+                    }
+                    
                     
                     btn.html('<div class="lds-dual-ring-white"></div>');
 
@@ -566,10 +585,19 @@
                         'phone' : $('#phone').val(),
                         'items' : JSON.stringify(cart),
                         'total' : total,
-                        'branch_id' : {{Auth::user()->branch_id}}
+                        'payment_type_id' : $('#payment_type').val(),
+                        'branch_id' : {{Auth::user()->branch_id}} ,
+                        
                     };
 
                 }else{
+                    if($('#payment_type').val() == null ){
+                        $('#pt-error').css('display', 'block');
+                        return false;
+                    }else{
+                        $('#pt-error').css('display', 'none');
+                    }
+
                     if($('#customer_id').val() == null){
                         $('#customer-error').css('display', 'block');
                         return false;
@@ -581,6 +609,7 @@
                             'customer_id' : $('#customer_id').val(),
                             'items' : JSON.stringify(cart),
                             'total' : total,
+                            'payment_type_id' : $('#payment_type').val(),
                             'branch_id' : {{Auth::user()->branch_id}}
                         }
                         
