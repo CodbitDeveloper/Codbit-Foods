@@ -28,6 +28,10 @@ class CreatePromosTable extends Migration
             /*$table->boolean('is_all_item')->default(false);
             $table->boolean('is_all_user')->default(false);*/
 
+            //Minimum amount a customer needs to meet to enjoy promo
+            $table->integer('min_amount')->nullable();
+            //Maximum amount the restaurant is willing to give to a customer
+            $table->integer('max_allowed_amount')->nullable();
             // Whether or not the voucher is a percentage or a fixed price. 
             $table->boolean('is_fixed')->default(true);
             // When the promo begins

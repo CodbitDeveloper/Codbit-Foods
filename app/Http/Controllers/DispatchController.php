@@ -149,21 +149,21 @@ class DispatchController extends Controller
        */
       public function is_active(Request $request)
       {
-        $result = true;
-        $dispatch = Dispatch::where('id', $request->id)->first();
+        $dispatch = Dispatch::where('id', $request->dispatch_id)->first();;
 
         $isactive = $request->active;
         $dispatch->active = $isactive;
 
         if($dispatch->save()){
             return response()->json([
+                'error' => false,
                 'data' => $dispatch,
                 'message' => 'Dispatch Rider is updated'
             ]);
         }else{
             return response()->json([
                 'message' => 'Nothing to update',
-                'error' => $result
+                'error' => true
             ]); 
         }
       }

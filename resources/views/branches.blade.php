@@ -53,7 +53,7 @@
                                                     {{$branch->phone_number}}
                                                 </td>
                                                 <td>
-                                                    <span class="badge badge-pill badge-primary">Deactivate</span>
+                                                    <span class="badge badge-pill badge-primary" style="cursor: pointer;" onclick="deactivate({{$branch->id}}, this)">{{$branch->active == 1 ? 'Deactivate' : 'Activate'}}</span>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -168,5 +168,66 @@
             }
         })
     });
+
+    function deactivate(branch, element){
+        el = $(element);
+        
+        el.prop('disabled', true);
+
+        var active;
+        if(el.html() == 'Deactivate'){
+            active = 0;
+        }else if(el.html() == 'Activate'){
+            active = 1;
+        }
+
+        el.html('Please wait...');
+
+        $.ajax({
+            url: '/api/branch/activate',
+            method: 'post',
+            data : 'branch_id='+branch+'&active='+active,
+            success: function(data){
+                el.prop('disabled', false);
+                
+                if(active == 0){
+                    el.html('Activate');
+                    $.notify({
+                        // options
+                        message: 'Branch deactivated'
+                    },{
+                       // settings
+                        type: 'success'
+                    });
+                }else if(active == 1){
+                    el.html('Deactivate');
+                    $.notify({
+                        // options
+                        message: 'Branch activated'
+                    },{
+                       // settings
+                        type: 'success'
+                    });
+                }         
+            }, 
+            error: function(err){
+                el.prop('disabled', false);
+                
+                if(active == 0){
+                    el.html('Deactivate');
+                }else if(active == 1){
+                    el.html('Activate');
+                } 
+
+                $.notify({
+                        // options
+                        message: 'Network error'
+                    },{
+                       // settings
+                        type: 'danger'
+                    });  
+            }
+        })
+    }
 </script>
 @endsection

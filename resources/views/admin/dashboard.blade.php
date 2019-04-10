@@ -229,7 +229,6 @@
                 <div class="separator mb-5"></div>
             </div>
 
-            @foreach($restaurants as $restaurant)
             <div class="row">
                 <div class="col-12 list" data-check-all="checkAll">
                     @foreach($restaurants as $restaurant)
@@ -256,7 +255,7 @@
                     @endforeach
                 </div>
             </div>
-            @endforeach
+            
         </div>
     </main>
 

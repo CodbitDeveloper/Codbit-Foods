@@ -43,8 +43,10 @@ Route::put('/order/update-status', 'OrderController@updateStatus')->name('order.
 
 Route::post('/user/add', 'UserController@store')->name('user.add');
 Route::put('/user/edit', 'UserController@update')->name('user.edit');
+Route::post('/user/activate', 'UserController@is_active')->name('user.activate');
 
 Route::post('/branches/add', 'BranchController@store')->name('branch.add');
+Route::post('/branch/activate', 'BranchController@is_active')->name('branch.activate');
 
 Route::prefix('customer')->middleware('cors')->group(function(){
     Route::get('/items', 'CustomerController@fetchAllItems');
@@ -69,3 +71,4 @@ Route::post('/promo/add', 'PromoController@store')->name('promo.add');
 
 Route::post('/dispatch/add', 'DispatchController@store')->name('dispatch.add');
 Route::put('/dispatch/edit', 'DispatchController@update')->name('dispatch.edit');
+Route::post('/dispatch/activate', 'DispatchController@is_active')->name('dispatch.activate');

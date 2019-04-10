@@ -45,7 +45,7 @@
                                             </a>
                                             <p class="mb-2 text-muted text-small">{{ucfirst($user->role)}}</p>
                                             <button type="button" class="btn btn-xs btn-outline-primary " onclick="toggleEdit({{$user}})" >Edit</button>
-                                            <button type="button" class="btn btn-xs btn-danger ">Deactivate</button>
+                                            <button type="button" class="btn btn-xs btn-danger " onclick="deactivate({{$user->id}}, this)">{{$user->active == 1 ? "Deactivate" : "Activate"}}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -372,5 +372,67 @@
                     }
                 });
         });
+
+        function deactivate(user, element)
+        {
+            el = $(element);
+
+            el.prop('disabled', true);
+
+            var active;
+            if(el.html() == 'Deactivate'){
+                active = 0;
+            }else if(el.html() == 'Activate'){
+                active = 1;
+            }
+
+            el.html('Please wait...');
+
+            $.ajax({
+                url: 'api/user/activate',
+                method: 'post',
+                data: 'user_id='+user+'&active='+active,
+                success: function(data){
+                    el.prop('disabled', false);
+
+                    if(active == 0){
+                        el.html('Activate');
+                        $.notify({
+                            //options
+                            message: 'Employee deactivated'
+                        },{
+                            //settings
+                            type: 'success'
+                        });
+                    }else if(active == 1){
+                        el.html('Deactivate');
+                        $.notify({
+                            //options
+                            message: 'Employee activated'
+                        },{
+                            //settings
+                            type: 'success'
+                        });
+                    }
+                },
+                error: function(err){
+                    el.prop('disabled', false);
+
+                    if(active == 0){
+                        el.html('Deactivate');
+                    }else if(active == 1){
+                        el.html('Activate');
+                    }
+
+                    $.notify({
+                        //options
+                        message: 'Network error'
+                    },{
+                        //settings
+                        type: 'danger'
+                    });
+                }
+            });
+        }
     </script>
 @endsection

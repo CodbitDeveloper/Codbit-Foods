@@ -160,9 +160,7 @@ class BranchController extends Controller
      */
     public function is_active(Request $request)
     {
-        $branch = Branch::where('id', $request->id)->first();
-        
-        $branch->setConnection('mysql2');
+        $branch = Branch::where('id', $request->branch_id)->first();
     
         $isactive = $request->active;
         $branch->active = $isactive;

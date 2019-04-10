@@ -64,7 +64,7 @@
                                                 <p class="list-item-heading mb-1 truncate">{{ucfirst($dispatch->firstname).' '.ucfirst($dispatch->lastname)}}</p>
                                             </a>
                                             <button type="button" class="btn btn-xs btn-outline-primary " onclick="toggleEdit({{$dispatch}})" >Edit</button>
-                                            <button type="button" class="btn btn-xs btn-danger ">Deactivate</button>
+                                            <button type="button" class="btn btn-xs btn-danger " onclick="deactivate({{$dispatch->id}}, this)">{{$dispatch->active == 1 ? "Deactivate" : "Activate"}}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -297,5 +297,65 @@
                     }
                 });
         });
+
+        function deactivate(dispatch, element)
+        {
+            el = $(element);
+
+            el.prop('disabled', true);
+
+            var active;
+            if(el.html() == 'Deactivate'){
+                active = 0;
+            }else if(el.html() == 'Activate'){
+                active = 1;
+            }
+            el.html('Please wait...');
+
+            $.ajax({
+                url: 'api/dispatch/activate',
+                method: 'post',
+                data: 'dispatch_id='+dispatch+'&active='+active,
+                success: function(data){
+                    el.prop('disabled', false);
+
+                    if(active == 0){
+                        el.html('Activate');
+                        $.notify({
+                            //options
+                            message: 'Dispatch rider deactivated'
+                        },{
+                            //settings
+                            type: 'success'
+                        });
+                    }else if(active == 1){
+                        el.html('Deactivate');
+                        $.notify({
+                            //options
+                            message: 'Dispatch rider activated'
+                        },{
+                            //settings
+                            type: 'success'
+                        });
+                    }
+                },
+                error: function(err){
+                    el.prop('disabled', false);
+
+                    if(active == 0){
+                        el.html("Deactivate");
+                    }else if(active == 1){
+                        el.html("Activate");
+                    }
+
+                    $.notify({
+                        //options
+                        message: 'Network error'
+                    },{
+                        type: 'danger'
+                    });
+                }
+            });
+        }
     </script>
 @endsection

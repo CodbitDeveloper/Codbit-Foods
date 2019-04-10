@@ -156,15 +156,16 @@ class UserController extends Controller
        * Check the status of the user to see
        * if the user is active or not.
        */
-      public function is_active (Request $request)
+      public function is_active(Request $request)
       {
-         $user = User::where('id', $request->id);
+         $user = User::where('id', $request->user_id)->first();
 
          $isactive     = $request->active;
          $user->active = $isactive;
 
          if ($user->save()){
             return response()->json([
+                  'error' => false,
                   'data'    => $user,
                   'message' => 'User is updated'
                ]);
