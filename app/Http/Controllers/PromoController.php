@@ -7,6 +7,7 @@ use App\Item;
 
 use App\Customer;
 use App\Category;
+use App\Utils;
 
 use Config;
 use Illuminate\Http\Request;
@@ -81,7 +82,15 @@ class PromoController extends Controller
         }
 
         $promo = new Promo();
-
+       if($request->hasFile('file')){
+            $fileName = Utils::saveImageFromDz($request, 'file', 'img/deals_promotions');
+            $promo->image = $fileName;
+       }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'An image is required for the promo'
+            ]);
+       }
         $promo->name = $request->name;
         $promo->code = $request->code;
         $promo->description = $request->description;
@@ -90,6 +99,8 @@ class PromoController extends Controller
         $promo->promo_amount = $request->promo_amount;
         $promo->starts_at = $request->starts_at;
         $promo->expires_at = $request->expires_at;
+
+
 
         if($promo->save()){
             if($request->all_customers == true){
