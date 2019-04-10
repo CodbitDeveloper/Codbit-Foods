@@ -261,7 +261,7 @@
 
                                                 <div class="card d-flex flex-row">
                                                     <a class="d-flex" href="#">
-                                                        <img alt="Thumbnail" src="img/samosa.jpg" class="list-thumbnail responsive border-0" />
+                                                        <img alt="Thumbnail" src="/img/deals_promotions/{{$promo->image}}" class="list-thumbnail responsive border-0" />
                                                     </a>
                                                     <div class="pl-2 d-flex flex-grow-1 min-width-zero">
                                                         <div class="card-body align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero align-items-lg-center">

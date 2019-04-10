@@ -177,7 +177,7 @@
                     @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
                     <li class="<?php if($page=='dispatch'){echo 'active'; } ?>" >
                         <a href="/dispatch">
-                            <i class="simple-icon-people"></i>
+                            <i class="flaticon-dispatch"></i>
                             <span>Dispatch</span>
                         </a>
                     </li>
