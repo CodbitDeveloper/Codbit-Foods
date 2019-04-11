@@ -176,6 +176,31 @@ class PromoController extends Controller
      */
     public function destroy(Promo $promo)
     {
-        //
+        $status = $promo->delete();
+
+        return response()->json([
+            'data' => $status,
+            'message' => $status ? 'Promo Code Deleted' : 'Error Deleting Promo Code'
+        ]);
+    }
+
+    public function is_active(Request $request)
+    {
+        $promo = Promo::where('id', $request->promo_id)->first();
+
+        $isactive = $request->is_active;
+        $promo->is_active = $isactive;
+
+        if($promo->save()){
+            return response()->json([
+                'data' => $promo,
+                'message' => 'Promo Code is updated'
+            ]);
+        }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'Error updating promo code'
+            ]);
+        }
     }
 }

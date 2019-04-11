@@ -67,7 +67,10 @@ Route::post('/report/order/weekly', 'OrderController@weeklyReport')->name('repor
 Route::post('/report/order/monthly', 'OrderController@weeklyReport')->name('report.sales.weekly');
 
 Route::post('/deals/add', 'DealController@store')->name('deals.add');
+Route::delete('/deals/delete/{deal}', 'DealController@destroy')->name('deals.delete');
 Route::post('/promo/add', 'PromoController@store')->name('promo.add');
+Route::post('/promo/activate', 'PromoController@is_active')->name('promo.activate');
+Route::delete('/promo/delete/{promo}', 'PromoController@destroy')->name('promo.delete');
 
 Route::post('/dispatch/add', 'DispatchController@store')->name('dispatch.add');
 Route::put('/dispatch/edit', 'DispatchController@update')->name('dispatch.edit');

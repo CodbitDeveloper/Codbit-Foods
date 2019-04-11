@@ -172,7 +172,7 @@ class ItemController extends Controller
        */
       public function update (Request $request, Item $item)
       {
-        if(Item::where('name', $request->name)->get()->count() > 0){
+        if(Item::where([['name', $request->name], ['id', '!=', $item->id]])->get()->count() > 0){
             return response()->json([
                 'error' => true,
                 'message' => 'Item name already exists. Try Again!'

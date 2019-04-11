@@ -25,10 +25,10 @@
                         <nav class="breadcrumb-container d-none d-sm-block d-lg-inline-block" aria-label="breadcrumb">
                             <ol class="breadcrumb pt-0">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Home</a>
+                                    <a href="/home">Home</a>
                                 </li>
                                 <li class="breadcrumb-item">
-                                    <a href="#">Item</a>
+                                    <a href="/menu">Item</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">{{$item->name}}</li>
                             </ol>

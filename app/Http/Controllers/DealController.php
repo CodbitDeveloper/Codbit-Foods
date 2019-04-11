@@ -68,6 +68,12 @@ class DealController extends Controller
      */
     public function store(Request $request)
     {
+        if(Deal::where('title', $request->title)->get()->count() > 0){
+            return response()->json([
+                'error' => true,
+                'message' => 'Deal already exists. Try again!'
+            ]);
+        }
         if($request->hasFile('file')){
             $fileName = Utils::saveImageFromDz($request, 'file', 'img/deals_promotions');
 

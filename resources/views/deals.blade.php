@@ -43,7 +43,7 @@
                         <nav class="breadcrumb-container d-none d-sm-block d-lg-inline-block" aria-label="breadcrumb">
                             <ol class="breadcrumb pt-0">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Home</a>
+                                    <a href="/home">Home</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">Deals and promotions</li>
                             </ol>
@@ -182,7 +182,7 @@
                                                                 Action
                                                             </button>
                                                             <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="#">Deactivate</a>
+                                                                <a class="dropdown-item" href="javascript:void(0)" onclick="deleteDeal({{$deal->id}})">Delete</a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -266,12 +266,21 @@
                                                     <div class="pl-2 d-flex flex-grow-1 min-width-zero">
                                                         <div class="card-body align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero align-items-lg-center">
                                                             <a href="#" class="w-40 w-sm-100">
-                                                                <p class="list-item-heading mb-1 truncate">Super Week</p>
+                                                                <p class="list-item-heading mb-1 truncate">{{$promo->name}}</p>
                                                             </a>
-                                                            <p class="mb-1 text-muted text-small truncate w-15 w-sm-100">10% discount on all items this week.</p>
-                                                            <p class="mb-1 text-muted text-small w-15 w-sm-100">Ends 10 days from today</p>
+                                                            <p class="mb-1 text-muted text-small truncate w-15 w-sm-100">{{$promo->description}}</p>
+                                                            <?php $expiry = Carbon\Carbon::parse($promo->expires_at);?>
+                                                            <p class="mb-1 text-muted text-small w-15 w-sm-100">{{$expiry->isPast() ? 'Expired' : 'Expires'}} {{$expiry->diffForHumans()}}</p>
                                                             <div class="w-15 w-sm-100">
-                                                                <span class="badge badge-pill badge-secondary text-uppercase">Ongoing</span>
+                                                                <span class="badge badge-pill badge-secondary text-uppercase">{{$expiry->isPast() ? 'Completed' : 'Ongoing'}}</span>
+                                                                <button class="btn btn-light btn-xs dropdown-toggle" type="button"
+                                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                Action
+                                                                </button>
+                                                                <div class="dropdown-menu">
+                                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="deactivate({{$promo->id}}, this)">{{$promo->is_active == 1 ? "Deactivate" : "Activate"}}</a>
+                                                                    <a class="dropdown-item ml-2" href="javascript:void(0)" onclick="deletePromo({{$promo->id}})">Delete</a>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -289,6 +298,42 @@
                 </div>
             </div>
         </div>
+        <div id="deleteModal" class="modal fade">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Are you sure?</h4>	
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to delete this deal? This process cannot be undone.</p>
+                        <input type="hidden" id="delete-deal-id"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="btn-delete">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="deletePromoModal" class="modal fade">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Are you sure?</h4>	
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to delete this promo code? This process cannot be undone.</p>
+                        <input type="hidden" id="delete-promo-id"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="btn-delete-promo">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 @endsection
 @section('scripts')
     <script src="{{asset('js/vendor/select2.full.js')}}"></script>
@@ -297,6 +342,21 @@
     <script src="{{asset('js/vendor/dropzone.min.js')}}"></script>
     <script src="{{asset('js/vendor/bootstrap-datepicker.js')}}"></script>
     <script src="{{asset('js/vendor/datatables.min.js')}}"></script>
+    <script>
+    function deleteDeal(deal)
+        {
+            $("#delete-deal-id").val(deal);
+
+            $('#deleteModal').modal('show');
+        }
+    
+    function deletePromo(promo)
+    {
+        $('#delete-promo-id').val(promo);
+
+        $('#deletePromoModal').modal('show');
+    }
+    </script>
 @endsection
 
 @section('customjs')
@@ -447,5 +507,164 @@
                 format: 'yyyy-mm-dd'
             });
         })
+
+        $('#btn-delete').on('click', function(e){
+            e.preventDefault();
+            var btn = $(this);
+            btn.html('<div class="lds-dual-ring-white"></div>');
+
+            $.ajax({
+                url: 'api/deals/delete/'+ $("#delete-deal-id").val(),
+                method: 'DELETE',
+                success: function(data){
+                    $(".modal").modal('hide');
+                    btn.html('Delete');
+
+                    if(data.error){
+                        $.notify({
+                            //options
+                            message: data.message
+                        },{
+                            //setting
+                            type: 'danger'
+                        });
+                    }else{
+                        $.notify({
+                            //options
+                            message: data.message
+                        },{
+                            //settings
+                            type: 'success'
+                        });
+
+                        setTimeout(function(){
+                            location.reload();
+                        }, 500);
+                    }
+                },
+                error: function(err){
+                    btn.html('Delete');
+                    $(".modal").modal('hide');
+
+                    $.notify({
+                        //options
+                        message: 'Network error'
+                    },{
+                        //settings
+                        type: 'danger'
+                    });
+                }
+            });
+        });
+
+        function deactivate(promo, element)
+        {
+            el = $(element);
+            el.prop('disabled', true);
+
+            var is_active;
+            if(el.html() == "Deactivate"){
+                is_active = 0
+            }else if(el.html() == "Activate"){
+                is_active = 1;
+            }
+
+            el.html('Loading...');
+
+            $.ajax({
+                url: 'api/promo/activate',
+                method: 'post',
+                data: 'promo_id='+promo+'&is_active='+is_active,
+                success: function(data){
+                    el.html('disabled', true);
+
+                    if(is_active == 0){
+                        el.html('Activate');
+                        $.notify({
+                        // options
+                        message: 'Promo Code deactivated'
+                        },{
+                        // settings
+                            type: 'success'
+                        });
+                    }else if(is_active == 1){
+                        el.html('Deactivate');
+                        $.notify({
+                        // options
+                        message: 'Promo Code activated'
+                        },{
+                        // settings
+                            type: 'success'
+                        });
+                    }
+                },
+                error: function(err){
+                    el.prop('disabled', false);
+                    
+                    if(is_active == 0){
+                        el.html('Deactivate');
+                    }else if(is_active == 1){
+                        el.html('Activate');
+                    } 
+
+                    $.notify({
+                            // options
+                            message: 'Network error'
+                        },{
+                        // settings
+                            type: 'danger'
+                        });  
+                }
+            });
+        }
+
+        $('#btn-delete-promo').on('click', function(e){
+            e.preventDefault();
+            var btn = $(this);
+            btn.html('<div class="lds-dual-ring-white"></div>');
+
+            $.ajax({
+                url: 'api/promo/delete/'+ $("#delete-promo-id").val(),
+                method: 'DELETE',
+                success: function(data){
+                    $(".modal").modal('hide');
+                    btn.html('Delete');
+
+                    if(data.error){
+                        $.notify({
+                            //options
+                            message: data.message
+                        },{
+                            //setting
+                            type: 'danger'
+                        });
+                    }else{
+                        $.notify({
+                            //options
+                            message: data.message
+                        },{
+                            //settings
+                            type: 'success'
+                        });
+
+                        setTimeout(function(){
+                            location.reload();
+                        }, 500);
+                    }
+                },
+                error: function(err){
+                    btn.html('Delete');
+                    $(".modal").modal('hide');
+
+                    $.notify({
+                        //options
+                        message: 'Network error'
+                    },{
+                        //settings
+                        type: 'danger'
+                    });
+                }
+            });
+        });
     </script>
 @endsection

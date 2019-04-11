@@ -304,6 +304,7 @@ class RestaurantController extends Controller
                 `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
                 `code` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                 `description` text COLLATE utf8mb4_unicode_ci,
+                `image` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
                 `max_uses` int(10) NULL DEFAULT NULL,
                 `max_uses_customer` int(10) NULL DEFAULT NULL,
                 `promo_amount` int(11) NOT NULL,

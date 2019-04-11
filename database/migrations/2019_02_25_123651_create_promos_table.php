@@ -18,6 +18,7 @@ class CreatePromosTable extends Migration
             $table->string('name');
             $table->string('code')->nullable();
             $table->text('description')->nullable();
+            $table->string('image');
             // The max uses this voucher has
             $table->integer('max_uses')->unsigned()->nullable();
             // How many times a customer can use this voucher.
