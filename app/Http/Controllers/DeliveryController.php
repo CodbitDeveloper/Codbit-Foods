@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Delivery;
+use App\Order;
 use Illuminate\Http\Request;
+use Config;
+use Auth;
 
 class DeliveryController extends Controller
 {
+    public function __construct()
+    {
+         $this->middleware('auth');
+         Config::set('database.connections.mysql2.database', session('db_name'));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,7 +44,38 @@ class DeliveryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'order_id' => 'required',
+            'dispatch_id' => 'required'
+        ]);
+
+        $delivery = new Delivery();
+
+        $delivery->order_id = $request->order_id;
+        $delivery->dispatch_id = $request->dispatch_id;
+
+        if($delivery->save()){
+            $order = Order::where('id', $request->order_id)->first();
+            $order->is_delivered = 1;
+
+            if($order->save()){
+                return response()->json([
+                    'data' => $delivery,
+                    'error' => false,
+                    'message' => 'Order assigned to a dispatch rider'
+                ]);
+            }else{
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Error setting is delivered'
+                ]);
+            }
+        }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'Error assigning an order to a dispatch rider'
+            ]); 
+        }
     }
 
     /**

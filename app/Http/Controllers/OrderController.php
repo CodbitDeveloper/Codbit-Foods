@@ -10,6 +10,7 @@ use App\User;
 use App\Admin;
 use App\Notifications\IncomingOrder;
 use App\paymentType;
+use App\Dispatch;
 
 use Illuminate\Http\Request;
 use Config;
@@ -39,8 +40,9 @@ class OrderController extends Controller
             }
             )->get();
             $payment_types = paymentType::all();
+            $dispatches = Dispatch::all();
 
-            return view('orders',compact('orders', 'categories', 'customers', 'payment_types'));
+            return view('orders',compact('orders', 'categories', 'customers', 'payment_types', 'dispatches'));
         }else{
             $orders = Order::with('customer')->where('branch_id', Auth::user()->branch_id)->latest()->get()->groupBy('status');
             $customers = Customer::all();
@@ -50,8 +52,9 @@ class OrderController extends Controller
             }
             )->get();
             $payment_types = paymentType::all();
+            $dispatches = Dispatch::all();
 
-            return view('orders',compact('orders', 'categories', 'customers', 'payment_types'));
+            return view('orders',compact('orders', 'categories', 'customers', 'payment_types', 'dispatches'));
         }
         /*return response()->json([
             'orders' => $orders
@@ -313,5 +316,26 @@ class OrderController extends Controller
                 'orders' => $orders
             ]
         );
+    }
+
+    public function pickup(Request $request)
+    {
+        $order = Order::where('id', $request->order_id)->first();
+
+        $order->is_delivered = 1;
+
+        if($order->save()){
+            return response()->json([
+                'data' => $order,
+                'error' => false,
+                'message' => 'Order has been picked'
+            ]);
+        }else{
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Error occured setting the order for pick up'
+                ]);
+        }
+ 
     }
 }

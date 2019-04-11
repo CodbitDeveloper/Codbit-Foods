@@ -88,8 +88,8 @@
                                 <img class="card-img br-8" src="/img/categories/{{$category->image}}" alt="Card image">
                                 <div class="card-img-overlay br8">
                                     <div class="position-relative mb-3">
-                                        <a href="#" class="badge badge-pill badge-theme-2 cursor" onclick="editCategory({{$category}})">EDIT</a>
-                                        <a href="#" class="badge badge-pill badge-theme-1 cursor" onclick="deleteCategory({{$category->id}})">DELETE</a>
+                                        <a href="javascript:void(0)" class="badge badge-pill badge-theme-2 cursor" onclick="editCategory({{$category}})">EDIT</a>
+                                        <a href="javascript:void(0)" class="badge badge-pill badge-theme-1 cursor" onclick="deleteCategory({{$category->id}})">DELETE</a>
                                     </div>
                                     <h1><b>{{$category->name}}</b></h1>
                                 </div>

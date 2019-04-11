@@ -106,7 +106,12 @@
                 <a class="nav-link " id="rejected-tab" data-toggle="tab" href="#rejected" role="tab"
                         aria-controls="fourth" aria-selected="false">REJECTED</a>
                 </li>
+                <li class="nav-item">
+                <a class="nav-link " id="picked-tab" data-toggle="tab" href="#picked" role="tab"
+                        aria-controls="fourth" aria-selected="false">PICKED/DELIVERED</a>
+                </li>
             </ul>
+
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
                     <div class="row">
@@ -126,7 +131,7 @@
                                             <p class="mb-1 text-small w-20 w-sm-100"><a href="#">{{$pending->customer->firstname.' '.$pending->customer->lastname}}</a></p>
                                             <p class="mb-1 mr-1 text-muted text-small w-20 w-sm-100 truncate">{{$pending->address}}</p>
                                             <p class="mb-1 text-muted text-small text-right w-15 w-sm-100">{{Carbon\Carbon::parse($pending->created_at)->diffForHumans()}}</p>
-                                            <div class="w-15 w-sm-100 text-right">
+                                            <div class="w-15 w-sm-100 text-right status-badge">
                                                 <span class="badge badge-pill badge-primary">PENDING</span>
                                             </div>
                                             
@@ -137,8 +142,8 @@
                                                         Action
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#" onclick="updateItem('In-Progress', {{$pending->id}})">Mark as <b>In Progress</b></a>
-                                                        <a class="dropdown-item" href="#" onclick="updateItem('Rejected', {{$pending->id}})">Mark as <b>Rejected</b></a>
+                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="updateItem('In-Progress', {{$pending->id}}, this)">Mark as <b>In Progress</b></a>
+                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="updateItem('Rejected', {{$pending->id}}, this)">Mark as <b>Rejected</b></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -175,7 +180,7 @@
                                             <p class="mb-1 text-small w-20 w-sm-100"><a href="#">{{$progress->customer->firstname.' '.$progress->customer->lastname}}</a></p>
                                             <p class="mb-1 mr-1 text-muted text-small w-20 w-sm-100 truncate">{{$progress->address}}</p>
                                             <p class="mb-1 text-muted text-small text-right w-15 w-sm-100">{{Carbon\Carbon::parse($progress->created_at)->diffForHumans()}}</p>
-                                            <div class="w-15 w-sm-100 text-right">
+                                            <div class="w-15 w-sm-100 text-right status-badge">
                                                 <span class="badge badge-pill badge-warning">IN PROGRESS</span>
                                             </div>
                                             
@@ -186,8 +191,8 @@
                                                         Action
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#" onclick="updateItem('Completed', {{$progress->id}})">Mark as <b>Completed</b></a>
-                                                        <a class="dropdown-item" href="#" onclick="updateItem('Rejected', {{$progress->id}})">Mark as <b>Rejected</b></a>
+                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="updateItem('Completed', {{$progress->id}}, this)">Mark as <b>Completed</b></a>
+                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="updateItem('Rejected', {{$progress->id}}, this)">Mark as <b>Rejected</b></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -210,6 +215,7 @@
                         <div class="col-12 list">
                         @if(isset($orders["Completed"]))
                                 @foreach($orders["Completed"] as $completed)
+                                @if($completed->is_delivered == 0)
                                 <div class="card d-flex flex-row mb-3">
                                     <a class="d-flex" href="/orders/{{$completed->id}}">
                                         <img src="/img/foods/{{$completed->items[0]->image}}" alt="{{$completed->items[0]->name}}" class="list-thumbnail responsive border-0" />
@@ -223,7 +229,7 @@
                                             <p class="mb-1 text-small w-20 w-sm-100"><a href="#">{{$completed->customer->firstname.' '.$completed->customer->lastname}}</a></p>
                                             <p class="mb-1 mr-1 text-muted text-small w-20 w-sm-100 truncate">{{$completed->address}}</p>
                                             <p class="mb-1 text-muted text-small text-right w-15 w-sm-100">{{Carbon\Carbon::parse($completed->created_at)->diffForHumans()}}</p>
-                                            <div class="w-15 w-sm-100 text-right">
+                                            <div class="w-15 w-sm-100 text-right status-badge">
                                                 <span class="badge badge-pill badge-success">COMPLETED</span>
                                             </div>
                                             
@@ -234,8 +240,13 @@
                                                         Action
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#" onclick="updateItem('In-Progress', {{$completed->id}})">Mark as <b>In Progress</b></a>
-                                                        <a class="dropdown-item" href="#" onclick="updateItem('Rejected', {{$completed->id}})">Mark as <b>Rejected</b></a>
+                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="updateItem('In-Progress', {{$completed->id}}, this)">Mark as <b>In Progress</b></a>
+                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="updateItem('Rejected', {{$completed->id}}, this)">Mark as <b>Rejected</b></a>
+                                                        @if($completed->to_be_delivered == 1)
+                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="deliverOrder({{$completed->id}})">Assign to <b>Dispatch</b></a>
+                                                        @else
+                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="markAsPicked({{$completed->id}}, this)">Marked as <b>Picked up</b></a>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -246,6 +257,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                @endif
                                 @endforeach
                             @else
                             <span class="text-small text-muted">No completed orders at this time.</span>
@@ -271,7 +283,7 @@
                                             <p class="mb-1 text-small w-20 w-sm-100"><a href="#">{{$completed->customer->firstname.' '.$completed->customer->lastname}}</a></p>
                                             <p class="mb-1 mr-1 text-muted text-small w-20 w-sm-100 truncate">{{$completed->address}}</p>
                                             <p class="mb-1 text-muted text-small text-right w-15 w-sm-100">{{Carbon\Carbon::parse($completed->created_at)->diffForHumans()}}</p>
-                                            <div class="w-15 w-sm-100 text-right">
+                                            <div class="w-15 w-sm-100 text-right status-badge">
                                                 <span class="badge badge-pill badge-dark">REJECTED</span>
                                             </div>
                                             
@@ -282,7 +294,7 @@
                                                         Action
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#" onclick="updateItem('In-Progress', {{$completed->id}})">Mark as <b>In Progress</b></a>
+                                                        <a class="dropdown-item" href="#" onclick="updateItem('In-Progress', {{$completed->id}}, this)">Mark as <b>In Progress</b></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -296,6 +308,52 @@
                                 @endforeach
                             @else
                             <span class="text-small text-muted">No rejected orders at this time.</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="picked" role="tabpanel" aria-labelledby="picked-tab">
+                    <div class="row">
+                        <div class="col-12 list">
+                        @if(isset($orders["Completed"]))
+                                @foreach($orders["Completed"] as $completed)
+                                @if($completed->is_delivered == 1)
+                                <div class="card d-flex flex-row mb-3">
+                                    <a class="d-flex" href="/orders/{{$completed->id}}">
+                                        <img src="/img/foods/{{$completed->items[0]->image}}" alt="{{$completed->items[0]->name}}" class="list-thumbnail responsive border-0" />
+                                    </a>
+                                    <div class="pl-2 d-flex flex-grow-1 min-width-zero">
+                                        <div class="card-body align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero align-items-lg-center">
+                                            <a href="/order/{{$completed->id}}" class="w-40 w-sm-100">
+                                                <p class="list-item-heading mb-1 truncate">{{$completed->items[0]->name}} @if($completed->items->count() > 1) <span class="text-muted mb-1 text-small">and
+                                                        {{$completed->items->count() - 1}} other @if($completed->items->count() > 2)items @else item @endif</span>@endif</p>
+                                            </a>
+                                            <p class="mb-1 text-small w-20 w-sm-100"><a href="#">{{$completed->customer->firstname.' '.$completed->customer->lastname}}</a></p>
+                                            <p class="mb-1 mr-1 text-muted text-small w-20 w-sm-100 truncate">{{$completed->address}}</p>
+                                            <p class="mb-1 text-muted text-small text-right w-15 w-sm-100">{{Carbon\Carbon::parse($completed->created_at)->diffForHumans()}}</p>
+                                            <div class="w-15 w-sm-100 text-right status-badge">
+                                                <span class="badge badge-pill badge-primary">{{$completed->to_be_delivered == 1 ? 'DELIVERED' : 'PICKED UP'}}</span>
+                                            </div>
+                                            
+                                            <div class="w-15 w-sm-100 text-right">
+                                                <div class="btn-group float-right mr-1 mb-1">
+                                                    <button class="btn btn-light btn-xs dropdown-toggle" type="button"
+                                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
+                                                        Action
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class=" pl-1 align-self-center pr-4">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+                                @endforeach
+                            @else
+                            <span class="text-small text-muted">No delivered orders at this time.</span>
                             @endif
                         </div>
                     </div>
@@ -459,6 +517,33 @@
                         <div class="loader"></div>
                     </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div id="assignModal" class="modal fade">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Assign a dispatch rider to an order</h4>	
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <form id="assign_form">
+                    <div class="modal-body form-row">
+                        <label class="form-group has-float-label col-lg-12 col-sm-12">
+                            <select class="form-control select2-single" name="dispatch_id" required>
+                                @foreach($dispatches as $dispatch)
+                                    <option value="{{$dispatch->id}}">{{$dispatch->firstname}} {{$dispatch->lastname}}</option>
+                                @endforeach
+                            </select>
+                            <span>Dispatch</span>
+                        </label>
+                        <input type="hidden" name="order_id" id="order_id"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btn-assign">Assign</button>
+                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -688,8 +773,11 @@
                 $('#new-order-total').html("GHS "+total);
             }
 
-            function updateItem(status, order){
-                $("#loading-modal").modal('show');
+            function updateItem(status, order, element){
+                el = $(element);
+                badge = el.closest('.card-body').find('.badge');
+                init = badge.html();
+                badge.html('LOADING...');
 
                 let data = {
                     'order_id' : order,
@@ -701,7 +789,7 @@
                     method: 'put',
                     data: data,
                     success: function(data){
-                            $("#loading-modal").modal('hide');
+                            badge.html(init);
                             if(data.error){
                                 $.notify({
                                     // options
@@ -725,8 +813,7 @@
                             }
                         },
                         error: function(err){
-                            $(".modal").modal('hide');
-                            btn.html('Confirm Order');
+                            badge.html(init);
                             $.notify({
                                 // options
                                 message: 'There was a network error'
@@ -737,5 +824,115 @@
                         }
                 })
             }
+
+            function markAsPicked(order, element){
+                el = $(element);
+                badge = el.closest('.card-body').find('.badge');
+                init = badge.html();
+                badge.html('LOADING...');
+
+                let data = {
+                    'order_id' : order,
+                };
+
+                $.ajax({
+                    url: 'api/order/pickup',
+                    method: 'post',
+                    data: data,
+                    success: function(data){
+                        badge.html(init);
+                        if(data.error){
+                            $.notify({
+                                // options
+                                message: data.message
+                            },{
+                                // settings
+                                type: 'danger'
+                            });
+                        }else{
+                            $.notify({
+                                // options
+                                message: data.message
+                            },{
+                                // settings
+                                type: 'success'
+                            });
+
+                            setTimeout(function(){
+                                location.reload();
+                            }, 500);
+                        }
+                    },
+                    error: function(err){
+                        badge.html(init);
+                        $.notify({
+                            // options
+                            message: 'There was a network error'
+                        },{
+                            // settings
+                            type: 'danger'
+                        });
+                    }
+                });
+            }
+
+            function deliverOrder(deliver)
+            {
+                $('#order_id').val(deliver);
+
+                $('#assignModal').modal('show');
+            }
+
+            $('#assign_form').on('submit', function(e){
+                e.preventDefault();
+                var btn = $(this).find('[type="submit"]');
+                btn.html('<div class="lds-dual-ring-white"></div>');
+                data = $(this).serialize();
+
+                $.ajax({
+                    url: 'api/delivery/add',
+                    method: 'post',
+                    data: data,
+                    success: function(data){
+                        $('.modal').modal('hide');
+                        btn.html('Assign');
+
+                        if(data.error){
+                            $.notify({
+                                //options
+                                message: data.message
+                            },{
+                                //setting
+                                type: 'danger'
+                            });
+                        }else{
+                            $.notify({
+                                //options
+                                message: data.message
+                            },{
+                                //settings
+                                type: 'success'
+                            });
+
+                            setTimeout(function(){
+                                location.reload();
+                            }, 500);
+                        }
+                    },
+                    error: function(err){
+                        btn.html('Assign');
+                        $(".modal").modal('hide');
+
+                        $.notify({
+                            //options
+                            message: 'Network error'
+                        },{
+                            //settings
+                            type: 'danger'
+                        });
+                    }
+                });
+
+            });
     </script>
 @endsection

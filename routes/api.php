@@ -39,7 +39,7 @@ Route::post('/items/update/{item}', 'ItemController@update')->name('items.update
 
 Route::post('/orders/add', 'OrderController@store')->name('orders.add');
 Route::put('/order/update-status', 'OrderController@updateStatus')->name('order.update-status');
-
+Route::post('/order/pickup', 'OrderController@pickup')->name('order.pickup');
 
 Route::post('/user/add', 'UserController@store')->name('user.add');
 Route::put('/user/edit', 'UserController@update')->name('user.edit');
@@ -75,3 +75,5 @@ Route::delete('/promo/delete/{promo}', 'PromoController@destroy')->name('promo.d
 Route::post('/dispatch/add', 'DispatchController@store')->name('dispatch.add');
 Route::put('/dispatch/edit', 'DispatchController@update')->name('dispatch.edit');
 Route::post('/dispatch/activate', 'DispatchController@is_active')->name('dispatch.activate');
+
+Route::post('/delivery/add', 'DeliveryController@store')->name('delivery.add');

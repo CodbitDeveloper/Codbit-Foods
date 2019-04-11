@@ -26,7 +26,7 @@
                                 <a href="#">Home</a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a href="#">Deals and Promotions</a>
+                                <a href="/deals">Deals and Promotions</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">
                                 Add Promo

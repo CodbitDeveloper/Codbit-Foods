@@ -103,14 +103,14 @@ class PromoController extends Controller
 
 
         if($promo->save()){
-            if($request->all_customers == true){
+            if($request->all_items == true){
                 $items = Item::all();
                 $items->pluck('id')->toArray();
             }else{
                 $items = explode(',', $request->items);
             }
 
-            if($request->all_items == true){
+            if($request->all_customers == true){
                 $customers = Customer::all();
                 $customers->pluck('id')->toArray();
             }else{
