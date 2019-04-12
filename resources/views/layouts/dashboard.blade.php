@@ -91,7 +91,7 @@
                 </button>
 
                 <div class="dropdown-menu dropdown-menu-right mt-3">
-                    <a class="dropdown-item" href="#">My account &nbsp;<i class="simple-icon-user"></i></a>
+                    <a class="dropdown-item" href="/my-account">My account &nbsp;<i class="simple-icon-user"></i></a>
                     <a class="dropdown-item" href="{{ route('logout') }}"
                             onclick="event.preventDefault();
                                      document.getElementById('logout-form').submit();">
@@ -179,6 +179,14 @@
                         <a href="/dispatch">
                             <i class="flaticon-delivery"></i>
                             <span>Dispatch</span>
+                        </a>
+                    </li>
+                    @endif
+                    @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
+                    <li class="<?php if($page=='settings'){echo 'active'; } ?>" >
+                        <a href="/settings">
+                            <i class="flaticon-settings"></i>
+                            <span>Settings</span>
                         </a>
                     </li>
                     @endif

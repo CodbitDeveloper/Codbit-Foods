@@ -26,7 +26,9 @@ class SettingController extends Controller
      */
     public function index()
     {
-        //
+        $settings = Setting::all();
+
+        return view('settings', compact('settings'));
     }
 
     /**

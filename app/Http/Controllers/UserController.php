@@ -221,4 +221,9 @@ class UserController extends Controller
                'message' => 'Current User Details Retrieved Successfully'
             ]);
       }
+
+      public function myAccount()
+      {
+        return view('my-account');
+      }
 }

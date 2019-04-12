@@ -50,3 +50,5 @@ Route::get('/deals', 'DealController@index')->name('deals.promotions');
 Route::get('/add-promo', 'PromoController@create')->name('promos.add');
 
 Route::get('/dispatch', 'DispatchController@index')->name('dispatch');
+Route::get('/settings', 'SettingController@index')->name('settings');
+Route::get('/my-account', 'UserController@myAccount')->name('my-account');
