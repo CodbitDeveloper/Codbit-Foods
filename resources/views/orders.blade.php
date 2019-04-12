@@ -161,6 +161,7 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="tab-pane fade" id="inprogress" role="tabpanel" aria-labelledby="inprogress-tab">
                     <div class="row">
                         <div class="col-12 list">

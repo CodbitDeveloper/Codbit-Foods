@@ -273,7 +273,9 @@ class OrderController extends Controller
 
     public function single($order){
         $order = Order::with('items', 'customer')->where('id', '=', $order)->first();
-        return view('order-details', compact('order'));
+        $dispatches = Dispatch::all();
+
+        return view('order-details', compact('order', 'dispatches'));
     }
 
     public function invoice($order){

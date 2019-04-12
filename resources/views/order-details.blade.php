@@ -1,4 +1,9 @@
 @extends('layouts.dashboard', ['page'=>'orders'])
+@section('styles')
+<link rel="stylesheet" href="{{asset('css/vendor/select2.min.css')}}" />
+<link rel="stylesheet" href="{{asset('css/vendor/select2-bootstrap.min.css')}}" />
+<link rel="stylesheet" href="{{asset('css/vendor/bootstrap-float-label.min.css')}}" />
+@endsection
 @section('content')
 <div class="container-fluid disable-text-selection">
             <div class="row">
@@ -8,10 +13,10 @@
                         <nav class="breadcrumb-container d-none d-sm-block d-lg-inline-block" aria-label="breadcrumb">
                             <ol class="breadcrumb pt-0">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Home</a>
+                                    <a href="/home">Home</a>
                                 </li>
                                 <li class="breadcrumb-item">
-                                    <a href="#">Orders</a>
+                                    <a href="/orders">Orders</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">Details</li>
                             </ol>
@@ -24,19 +29,22 @@
                             </button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 @if(strtolower($order->status) != 'pending')
-                                    <a class="dropdown-item" href="#">Mark as <b>pending</b></a>
+                                    <a class="dropdown-item" href="#" onclick="updateItem('Pending', {{$order->id}}, this)">Mark as <b>pending</b></a>
                                 @endif
                                 @if(strtolower($order->status) != 'in-progress')
-                                    <a class="dropdown-item" href="#">Mark as in <b>progress</b></a>
+                                    <a class="dropdown-item" href="#" onclick="updateItem('In-Progress', {{$order->id}}, this)">Mark as in <b>progress</b></a>
                                 @endif
                                 @if(strtolower($order->status) != 'rejected')
-                                    <a class="dropdown-item" href="#">Mark as <b>rejected</b></a>
+                                    <a class="dropdown-item" href="#" onclick="updateItem('Rejected', {{$order->id}}, this)">Mark as <b>rejected</b></a>
                                 @endif
                                 @if(strtolower($order->status) != 'completed')
-                                    <a class="dropdown-item" href="#">Mark as <b>completed</b></a>
+                                    <a class="dropdown-item" href="#" onclick="updateItem('Completed', {{$order->id}}, this)">Mark as <b>completed</b></a>
                                 @endif
                                 @if(strtolower($order->status) == 'completed')
-                                    <a class="dropdown-item" href="#">Mark as <b>picked up</b></a>
+                                    <a class="dropdown-item" href="#" onclick="markAsPicked({{$order->id}}, this)">Mark as <b>picked up</b></a>
+                                @endif
+                                @if($order->to_be_delivered == 1 && strtolower($order->status) == 'completed')
+                                    <a class="dropdown-item" href="javascript:void(0)" onclick="deliverOrder({{$order->id}})">Assign to <b>Dispatch</b></a>
                                 @endif
                             </div>
                         </div>
@@ -121,4 +129,199 @@
                 </div>
             </div>
         </div>
+        <div id="assignModal" class="modal fade">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Assign a dispatch rider to an order</h4>	
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <form id="assign_form">
+                    <div class="modal-body form-row">
+                        <label class="form-group has-float-label col-lg-12 col-sm-12">
+                            <select class="form-control select2-single" name="dispatch_id" required>
+                                @foreach($dispatches as $dispatch)
+                                    <option value="{{$dispatch->id}}">{{$dispatch->firstname}} {{$dispatch->lastname}}</option>
+                                @endforeach
+                            </select>
+                            <span>Dispatch</span>
+                        </label>
+                        <input type="hidden" name="order_id" id="order_id"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btn-assign">Assign</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+@endsection
+@section('scripts')
+    <script src="{{asset('js/vendor/bootstrap-notify.min.js')}}"></script>
+    <script src="{{asset('js/vendor/select2.full.js')}}"></script>
+    <script>
+        function updateItem(status, order, element){
+            el = $(element);
+            badge = el.closest('.card-body').find('.badge');
+            init = badge.html();
+            badge.html('LOADING...');
+
+            let data = {
+                'order_id' : order,
+                'status' : status
+            };
+
+            $.ajax({
+                url: '/api/order/update-status',
+                method: 'put',
+                data: data,
+                success: function(data){
+                    badge.html(init);
+                    if(data.error){
+                        $.notify({
+                            // options
+                            message: data.message
+                        },{
+                            // settings
+                            type: 'danger'
+                        });
+                    }else{
+                        $.notify({
+                            // options
+                            message: data.message
+                        },{
+                            // settings
+                            type: 'success'
+                        });
+
+                        setTimeout(function(){
+                            location.reload();
+                        }, 500);
+                    }
+                },
+                error: function(err){
+                    badge.html(init);
+                    $.notify({
+                        // options
+                        message: 'There was a network error'
+                    },{
+                        // settings
+                        type: 'danger'
+                    });
+                }
+            })
+        }
+
+        function markAsPicked(order, element){
+                el = $(element);
+                badge = el.closest('.card-body').find('.badge');
+                init = badge.html();
+                badge.html('LOADING...');
+
+                let data = {
+                    'order_id' : order,
+                };
+
+                $.ajax({
+                    url: '/api/order/pickup',
+                    method: 'post',
+                    data: data,
+                    success: function(data){
+                        badge.html(init);
+                        if(data.error){
+                            $.notify({
+                                // options
+                                message: data.message
+                            },{
+                                // settings
+                                type: 'danger'
+                            });
+                        }else{
+                            $.notify({
+                                // options
+                                message: data.message
+                            },{
+                                // settings
+                                type: 'success'
+                            });
+
+                            setTimeout(function(){
+                                location.reload();
+                            }, 500);
+                        }
+                    },
+                    error: function(err){
+                        badge.html(init);
+                        $.notify({
+                            // options
+                            message: 'There was a network error'
+                        },{
+                            // settings
+                            type: 'danger'
+                        });
+                    }
+                });
+        }
+
+        function deliverOrder(deliver)
+        {
+            $('#order_id').val(deliver);
+
+            $('#assignModal').modal('show');
+        }
+        
+        $('#assign_form').on('submit', function(e){
+            e.preventDefault();
+            var btn = $(this).find('[type="submit"]');
+            btn.html('<div class="lds-dual-ring-white"></div>');
+            data = $(this).serialize();
+
+            $.ajax({
+                url: '/api/delivery/add',
+                method: 'post',
+                data: data,
+                success: function(data){
+                    $('.modal').modal('hide');
+                    btn.html('Assign');
+
+                    if(data.error){
+                        $.notify({
+                            //options
+                            message: data.message
+                        },{
+                            //setting
+                            type: 'danger'
+                        });
+                    }else{
+                        $.notify({
+                            //options
+                            message: data.message
+                        },{
+                            //settings
+                            type: 'success'
+                        });
+
+                        setTimeout(function(){
+                            location.reload();
+                        }, 500);
+                    }
+                },
+                error: function(err){
+                    btn.html('Assign');
+                    $(".modal").modal('hide');
+
+                    $.notify({
+                        //options
+                        message: 'Network error'
+                    },{
+                        //settings
+                        type: 'danger'
+                    });
+                }
+            });
+
+        });
+
+    </script>
 @endsection

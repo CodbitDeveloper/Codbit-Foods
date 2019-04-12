@@ -245,6 +245,11 @@
                     </div>
                     @else
                     <div class="promos mb-4">
+                    <div class="float-sm-right">
+                        @if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager')
+                            <a href="/add-promo"><button type="button" class="btn btn-primary btn-lg" data-backdrop="static">ADD NEW</button></a>
+                        @endif
+                    </div>
                         <table class="data-table responsive nowrap mb-3"  data-order="[[ 0, &quot;asc&quot; ]]">
                             <thead>
                                 <th>
