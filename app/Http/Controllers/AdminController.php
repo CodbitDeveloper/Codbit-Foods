@@ -140,6 +140,14 @@ class AdminController extends Controller
             ]);
     }
 
+    /**
+     * ------------------------------------
+     * Check if an admin is active or not
+     * ------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function is_active(Request $request)
     {
         $admin = Admin::where('id', $request->id)->first();

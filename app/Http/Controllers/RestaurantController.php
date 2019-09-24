@@ -84,6 +84,14 @@ class RestaurantController extends Controller
         ]);
     }
 
+    /**
+     * -----------------------------------------------------------------
+     * Creating a database and a new branch for a particular restaurant 
+     * -----------------------------------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function create_db(Request $request){
         $request->validate([
             'id' => 'required',
@@ -617,6 +625,14 @@ class RestaurantController extends Controller
         }
     }
 
+    /**
+     * ----------------------------------------
+     * Check if a restaurant is active or not 
+     * ----------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function is_active(Request $request)
     {
         $restaurant = Restaurant::where('id', $request->id)->first();

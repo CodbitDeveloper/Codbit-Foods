@@ -27,6 +27,13 @@ class DispatchController extends Controller
         return view('dispatch')->with('dispatches', $dispatches);
     }
 
+    /**
+     * -------------------------
+     * Get all dispatch riders
+     * -------------------------
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function all_dispatches()
       {
         $dispatches = Dispatch::all();
@@ -144,29 +151,33 @@ class DispatchController extends Controller
     }
 
     /**
-       * Check the status of the user to see
-       * if the user is active or not.
-       */
-      public function is_active(Request $request)
-      {
-        $dispatch = Dispatch::where('id', $request->dispatch_id)->first();;
+     * ------------------------------------------------------------------
+     * Check the status of the user to see if the user is active or not.
+     * ------------------------------------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function is_active(Request $request)
+    {
+    $dispatch = Dispatch::where('id', $request->dispatch_id)->first();;
 
-        $isactive = $request->active;
-        $dispatch->active = $isactive;
+    $isactive = $request->active;
+    $dispatch->active = $isactive;
 
-        if($dispatch->save()){
-            return response()->json([
-                'error' => false,
-                'data' => $dispatch,
-                'message' => 'Dispatch Rider is updated'
-            ]);
-        }else{
-            return response()->json([
-                'message' => 'Nothing to update',
-                'error' => true
-            ]); 
-        }
-      }
+    if($dispatch->save()){
+        return response()->json([
+            'error' => false,
+            'data' => $dispatch,
+            'message' => 'Dispatch Rider is updated'
+        ]);
+    }else{
+        return response()->json([
+            'message' => 'Nothing to update',
+            'error' => true
+        ]); 
+    }
+    }
 
     /**
      * Remove the specified resource from storage.

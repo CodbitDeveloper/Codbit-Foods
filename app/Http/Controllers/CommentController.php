@@ -30,6 +30,13 @@ class CommentController extends Controller
         return view('comments', compact('comments'));
     }
 
+    /**
+     * -----------------
+     * Get all comments
+     * -----------------
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function all_comment()
     {
         $comments = Comment::latest()->get();

@@ -184,6 +184,14 @@ class PromoController extends Controller
         ]);
     }
 
+    /**
+     * -------------------------------------
+     * Check if promo code is active or not
+     * -------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function is_active(Request $request)
     {
         $promo = Promo::where('id', $request->promo_id)->first();

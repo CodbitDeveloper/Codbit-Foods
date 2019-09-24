@@ -20,6 +20,13 @@ class UserController extends Controller
     }
 
 
+    /**
+     * --------------------------------------
+     * Present a page for viewing all users
+     * --------------------------------------
+     * 
+     * @return view
+     */
     public function index ()
       {
         if(strtolower(Auth::user()->role) == 'admin'){
@@ -35,6 +42,13 @@ class UserController extends Controller
          }
       }
 
+      /**
+       * ---------------
+       * Get all users
+       * ---------------
+       * 
+       * @return \Illuminate\Http\Response
+       */
       public function all_users ()
       {
          $users = User::all();
@@ -58,13 +72,12 @@ class UserController extends Controller
     }
 
       /**
+       * ------------------------------
        * Register or create a new user
-       *
-       * @param [string] name
-       * @param [string] username
-       * @param [string] password
-       * @param [string] password_confirmation
-       * @param [string] message
+       * ------------------------------
+       * 
+       * @param  \Illuminate\Http\Request  $request
+       * @return \Illuminate\Http\Response
        */
       public function store(Request $request)
       {
@@ -105,9 +118,13 @@ class UserController extends Controller
       }
 
       /**
+       * --------------------
        * Update User Details
+       * --------------------
        *
-       * @return [json] user object
+       * @param  \Illuminate\Http\Request  $request
+       * @param  \App\User  $user
+       * @return \Illuminate\Http\Response
        */
       public function update (Request $request, User $user)
       {
@@ -142,7 +159,11 @@ class UserController extends Controller
       }
 
       /**
-       * Edit user details
+       * ----------------------------------------
+       * Present a page for editing user details
+       * -----------------------------------------
+       * 
+       * @return view
        */
       public function edit (Request $request)
       {
@@ -153,8 +174,12 @@ class UserController extends Controller
 
 
       /**
-       * Check the status of the user to see
-       * if the user is active or not.
+       * ------------------------------------------------------------------
+       * Check the status of the user to see if the user is active or not.
+       * -------------------------------------------------------------------
+       * 
+       * @param  \Illuminate\Http\Request  $request
+       * @return \Illuminate\Http\Response
        */
       public function is_active(Request $request)
       {
@@ -178,8 +203,11 @@ class UserController extends Controller
       }
 
       /**
+       * ----------------------------------
        * Check if a username already exist
+       * -----------------------------------
        *
+       * @param  \Illuminate\Http\Request  $request
        * @return bool
        */
       public function isAvailable (Request $request)
@@ -195,9 +223,12 @@ class UserController extends Controller
 
 
       /**
-       * Delete User
+       * -----------------------
+       * Delete User's account
+       * -----------------------
        *
-       * @return [json] user object
+       * @param  \App\User  $user
+       * @return \Illuminate\Http\Response
        */
 
       public function destroy (User $user)
@@ -210,6 +241,13 @@ class UserController extends Controller
             ]);
       }
 
+      /**
+       * -------------------------
+       * Get current user details 
+       * -------------------------
+       * 
+       * @return \Illuminate\Http\Response
+       */
       public function getUser ()
       {
          $user = Auth::guard('api')->user();
@@ -222,6 +260,13 @@ class UserController extends Controller
             ]);
       }
 
+      /**
+       * --------------------------------
+       * Present a page for user profile
+       * --------------------------------
+       * 
+       * @return view
+       */
       public function myAccount()
       {
         return view('my-account');

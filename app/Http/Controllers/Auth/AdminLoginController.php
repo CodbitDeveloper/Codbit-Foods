@@ -43,10 +43,6 @@ class AdminLoginController extends Controller
 
             return \redirect()->intended(route('admin.dashboard'));
 
-            /*return response()->json([
-                'data' => Auth::guard('admin')->user(),
-                'access_token' => $token
-            ]);*/
         }
         //if unsuccessful, the redirect back to login page with the form data
         return redirect()->back()

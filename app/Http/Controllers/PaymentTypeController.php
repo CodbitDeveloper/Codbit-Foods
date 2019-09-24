@@ -100,6 +100,14 @@ class PaymentTypeController extends Controller
         ]);
     }
 
+    /**
+     * ------------------------------------------
+     * Check if a payment type is active or not
+     * ------------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function is_active(Request $request)
     {
         $paymentType = paymentType::where('id', $request->id)->first();

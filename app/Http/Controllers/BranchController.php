@@ -41,8 +41,11 @@ class BranchController extends Controller
     }
 
     /**
-     * View all branches 
+     * --------------------
+     * Get all branches 
+     * --------------------
      * 
+     * @return \Illuminate\Http\Response
      */
     public function all_branches()
     {
@@ -154,9 +157,12 @@ class BranchController extends Controller
     }
 
     /**
-     * Disable a branch by checking if the
-     * branch is active or not
+     * ----------------------------------------------------------------------
+     * Disable or enable a branch by checking if the branch is active or not
+     * ----------------------------------------------------------------------
      * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function is_active(Request $request)
     {

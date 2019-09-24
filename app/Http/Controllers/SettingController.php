@@ -97,6 +97,14 @@ class SettingController extends Controller
         //
     }
 
+    /**
+     * ----------------------------------------
+     * Present a page for searching menu items
+     * ----------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return view
+     */
     public function search(Request $request){
         $query = $request->q;
         $items = Item::with('category')->where('name', 'LIKE', '%'.$request->q.'%')
@@ -108,6 +116,14 @@ class SettingController extends Controller
         return view('search', compact('items', 'query'));
     }
 
+    /**
+     * -----------------------------------
+     * Display a page for viewing reports
+     * ------------------------------------
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return view
+     */
     public function reports(Request $request){
         return view('reports');
     }

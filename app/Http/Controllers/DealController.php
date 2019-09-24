@@ -38,6 +38,13 @@ class DealController extends Controller
         ->with('ongoing_deals', $ongoing_deals);
     }
 
+    /**
+     * -----------------------
+     * Get all latest deals
+     * -----------------------
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function all_deal()
     {
         $deals = Deal::latest()->get();

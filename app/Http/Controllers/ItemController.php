@@ -36,6 +36,13 @@ class ItemController extends Controller
         return view('items', compact('items', 'categories'));
     }
 
+    /**
+     * ----------------------------------
+     * Get all menu items with category
+     * ----------------------------------
+     * 
+     * @return [Json]
+     */
     public function all_items ()
     {
         $items = Item::with(['category'])->get();
@@ -151,7 +158,12 @@ class ItemController extends Controller
     }
 
     /**
+     * -----------------
      * Edit a menu item
+     * -----------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return view
      */
     public function edit (Request $request)
     {
@@ -162,111 +174,131 @@ class ItemController extends Controller
         return view('items.edit', compact('item'));
     }
 
-      /**
-       * Update the specified resource in storage.
-       *
-       * @param  \Illuminate\Http\Request $request
-       * @param  \App\Item                $item
-       *
-       * @return \Illuminate\Http\Response
-       */
-      public function update (Request $request, Item $item)
-      {
-        if(Item::where([['name', $request->name], ['id', '!=', $item->id]])->get()->count() > 0){
-            return response()->json([
-                'error' => true,
-                'message' => 'Item name already exists. Try Again!'
-            ]);
-        }
-
-         $item->name = $request->name;
-         $item->description = $request->description;
-         $item->price = $request->price;
-         $item->category_id = $request->category_id;
-
-         if($request->hasFile('file'))
-         {
-            $fileName = Utils::saveImageFromDz($request, 'file', 'img/foods');
-            $item->image = $fileName;
-         }
-
-         $status = $item->update();
+   /**
+    * Update the specified resource in storage.
+    *
+    * @param  \Illuminate\Http\Request $request
+    * @param  \App\Item  $item
+    *
+    * @return \Illuminate\Http\Response
+    */
+   public function update (Request $request, Item $item)
+   {
+   if(Item::where([['name', $request->name], ['id', '!=', $item->id]])->get()->count() > 0){
          return response()->json([
-            'data' => $item,
-            'error'  => !$status,
-            'message' => $status ? 'Item updated!' : 'Error updating item'
+            'error' => true,
+            'message' => 'Item name already exists. Try Again!'
+         ]);
+   }
+
+      $item->name = $request->name;
+      $item->description = $request->description;
+      $item->price = $request->price;
+      $item->category_id = $request->category_id;
+
+      if($request->hasFile('file'))
+      {
+         $fileName = Utils::saveImageFromDz($request, 'file', 'img/foods');
+         $item->image = $fileName;
+      }
+
+      $status = $item->update();
+      return response()->json([
+         'data' => $item,
+         'error'  => !$status,
+         'message' => $status ? 'Item updated!' : 'Error updating item'
+      ]);
+   }
+
+   /**
+    * -----------------------------
+    * Check the status of an Item
+    *------------------------------
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
+   public function is_active (Request $request)
+   {
+      $item = Item::where('id', $request->id)->first();
+
+      $isactive     = $request->active;
+      $item->active = $isactive;
+
+      if ($item->save())
+      {
+         return response()->json([
+            'data'    => $item,
+            'message' => 'Item is updated'
          ]);
       }
-
-      /**
-       * Check the status of an Item
-       */
-      public function is_active (Request $request)
+      else
       {
-         $item = Item::where('id', $request->id)->first();
-
-         $isactive     = $request->active;
-         $item->active = $isactive;
-
-         if ($item->save())
-         {
-            return response()->json([
-               'data'    => $item,
-               'message' => 'Item is updated'
-            ]);
-         }
-         else
-         {
-            return response()->json([
-               'message' => 'Nothing to update',
-               'error'   => true
-            ]);
-         }
-      }
-
-
-      public function toggleActive (Request $request, Item $item)
-      {
-         $item->active = !$item->active;
-
-         if ($item->save())
-         {
-            return response()->json([
-               'error'  => false,
-               'data'    => $item,
-               'message' => 'Item has been updated!'
-            ]);
-         }
-         else
-         {
-            return response()->json([
-               'message' => 'Could not update the item',
-               'error'   => true
-            ]);
-         }
-      }
-
-
-      /**
-       * Remove the specified resource from storage.
-       *
-       * @param  \App\Item $item
-       *
-       * @return \Illuminate\Http\Response
-       */
-      public function destroy (Item $item)
-      {
-         $status = $item->delete();
-
          return response()->json([
-            'status'  => $status,
-            'message' => $status ? 'Item Deleted!' : 'Error Deleting Item.'
+            'message' => 'Nothing to update',
+            'error'   => true
          ]);
       }
+   }
 
-      public function viewItem($item){
-          $item = Item::with(['category', 'comments', 'orders', 'ingredients', 'images', 'comments.customer'])->where('id', $item)->first();
-          $categories = Category::all();
-          return view('item-details', compact('item', 'categories'));
+   /**
+    * ---------------------------------------------
+    * Toggle to set the item to active or inactive
+    * ---------------------------------------------
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @param  \App\Item  $item
+    * @return \Illuminate\Http\Response
+    */
+   public function toggleActive (Request $request, Item $item)
+   {
+      $item->active = !$item->active;
+
+      if ($item->save())
+      {
+         return response()->json([
+            'error'  => false,
+            'data'    => $item,
+            'message' => 'Item has been updated!'
+         ]);
       }
+      else
+      {
+         return response()->json([
+            'message' => 'Could not update the item',
+            'error'   => true
+         ]);
+      }
+   }
+
+
+   /**
+    * Remove the specified resource from storage.
+    *
+    * @param  \App\Item $item
+    *
+    * @return \Illuminate\Http\Response
+    */
+   public function destroy (Item $item)
+   {
+      $status = $item->delete();
+
+      return response()->json([
+         'status'  => $status,
+         'message' => $status ? 'Item Deleted!' : 'Error Deleting Item.'
+      ]);
+   }
+
+   /**
+    * ----------------------------------------
+    * Present a page for viewing item details
+    * ----------------------------------------
+    * @param  $item
+    * @return view
+    */
+   public function viewItem($item){
+         $item = Item::with(['category', 'comments', 'orders', 'ingredients', 'images', 'comments.customer'])->where('id', $item)->first();
+         $categories = Category::all();
+         return view('item-details', compact('item', 'categories'));
+   }
 }

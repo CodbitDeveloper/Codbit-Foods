@@ -44,6 +44,13 @@ class HomeController extends Controller
         return view('home', compact('pending_orders', 'categories'));
     }
 
+    /**
+     * --------------------------------------
+     * Setting up dashboard for a restaurant
+     * --------------------------------------
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function setup_dashboard()
     {
         if(strtolower(Auth::user()->role) == 'admin'){
@@ -73,6 +80,13 @@ class HomeController extends Controller
 
     }
 
+    /**
+     * -----------------------------------------------------
+     * Display the weekly sales for a particular restaurant
+     * -----------------------------------------------------
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function week_sales()
     {
         if(\strtolower(Auth::user()->role) == 'admin'){

@@ -26,33 +26,55 @@ class CategoryController extends Controller
          }
          
     }
+
+    /**
+     * ----------------------
+     * Display category page
+     * ----------------------
+     * 
+     * @return view
+     */
     public function index ()
-      {
-         $categories = Category::paginate(12);
+    {
+        $categories = Category::paginate(12);
 
-         if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager'){
-          return view('categories')->with('categories', $categories);
-         }else{
-           return abort(403);
-         }
-      }
+        if(strtolower(Auth::user()->role) == 'admin' || strtolower(Auth::user()->role) == 'manager'){
+        return view('categories')->with('categories', $categories);
+        }else{
+        return abort(403);
+        }
+    }
 
-      public function allCategories ()
-      {
-         $categories = Category::all();
+    /**
+     * --------------------
+     * Get all categories
+     * --------------------
+     * 
+     * @return [Json]
+     */
+    public function allCategories ()
+    {
+        $categories = Category::all();
 
-         return $categories->toJson();
+        return $categories->toJson();
 
-      }
+    }
 
-      public function category_item ()
-      {
-         $category_item = Category::with(['items'])->get();
+    /**
+     * ------------------------
+     * Get category with items
+     * ------------------------
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function category_item ()
+    {
+        $category_item = Category::with(['items'])->get();
 
-         return response()->json([
-             'data' => $category_item,
-            ], 200);
-      }
+        return response()->json([
+            'data' => $category_item,
+        ], 200);
+    }
 
 
     /**
@@ -185,6 +207,13 @@ class CategoryController extends Controller
          ]);
     }
 
+    /**
+     * -------------------------
+     * Get category with items
+     * -------------------------
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function getCategoryItems(){
         $categoryItems = Category::with('items')->get();
         $formatted_array = array();

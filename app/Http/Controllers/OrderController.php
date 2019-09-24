@@ -62,7 +62,11 @@ class OrderController extends Controller
     }
 
     /**
+     * -------------------------------
      * Get orders with order items
+     * -------------------------------
+     * 
+     * @return [Json]
      */
     public function order_with_item()
     {
@@ -71,8 +75,13 @@ class OrderController extends Controller
         return $orders->toJson();
     }
 
-
-
+    /**
+     * ------------------
+     * Get all orders
+     * ------------------
+     * 
+     * @return [Json]
+     */
     public function allOrders()
     {
         $orders = Order::latest()->get();
@@ -80,9 +89,13 @@ class OrderController extends Controller
         return $orders->toJson();
     }
     
-/**
+     /**
+     * --------------------------
      * Get all the latest orders
+     * --------------------------
      * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function latestOrders(Request $request)
     {
@@ -94,6 +107,15 @@ class OrderController extends Controller
         ]);
     }
 
+    /**
+     * ----------------------------------
+     * List all orders to be delivered
+     * ----------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Order  $order
+     * @return \Illuminate\Http\Response
+     */
     public function deliverOrder(Order $order, Request $request)
     {
         $order = Order::where('id', $request->id)->first();
@@ -245,11 +267,13 @@ class OrderController extends Controller
     }
 
     /**
-     * Display the specified resource
-     * 
+     * --------------------------------------------------------
      * Retrieve orders with items made by a specific customer
+     * --------------------------------------------------------
+     * 
+     * @param  $id
+     * @return \Illuminate\Http\Response
      */
- 
     public function showOrdersByCustomer($id)
     {
         $order = Order::with('items')->where('customer_id', '=', $id)->get();
@@ -261,6 +285,13 @@ class OrderController extends Controller
     }
 
 
+    /**
+     * --------------------------------------------------
+     * Get all pending orders for a particular restaurant
+     * --------------------------------------------------
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function pending_orders()
     {
         $orders = Order::where('status', 'pending')->with('items', 'customer')->latest()->get();
@@ -271,6 +302,14 @@ class OrderController extends Controller
         ]);
     }
 
+    /**
+     * ------------------------------------------
+     * Display a page for viewing order details
+     * ------------------------------------------
+     * 
+     * @param  $order
+     * @return view
+     */
     public function single($order){
         $order = Order::with('items', 'customer')->where('id', '=', $order)->first();
         $dispatches = Dispatch::all();
@@ -278,11 +317,27 @@ class OrderController extends Controller
         return view('order-details', compact('order', 'dispatches'));
     }
 
+    /**
+     * -------------------------------------------------------------
+     * Present a page for viewing an invoice for a particular order
+     * -------------------------------------------------------------
+     * 
+     * @param  $order
+     * @return view
+     */
     public function invoice($order){
         $order = Order::with('items', 'customer', 'branch')->where('id', '=', $order)->first();
         return view('invoice', compact('order'));
     }
 
+    /**
+     * ----------------------------------------------------------------
+     * Generate a weekly report for all orders for a particular restaurant
+     * ----------------------------------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function weeklyReport(Request $request){
         $request->validate([
             'date' => 'required'
@@ -301,6 +356,14 @@ class OrderController extends Controller
         );
     }
 
+    /**
+     * ----------------------------------------------------------------
+     * Generate a monthly report for all orders for a particular restaurant
+     * ----------------------------------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function monthlyReport(Request $request){
         $request->validate([
             'date' => 'required'
@@ -320,6 +383,14 @@ class OrderController extends Controller
         );
     }
 
+    /**
+     * --------------------------------------------------
+     * Get all orders that have been picked or delivered
+     * --------------------------------------------------
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function pickup(Request $request)
     {
         $order = Order::where('id', $request->order_id)->first();
