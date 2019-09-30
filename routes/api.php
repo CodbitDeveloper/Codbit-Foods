@@ -13,9 +13,13 @@ use Illuminate\Http\Request;
 |
 */
 
-/*Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});*/
+/**
+ * API Authentication
+ * 
+ * JSON Web Token (JWT)
+ * ***Check https://jwt-auth.readthedocs.io/en/docs/laravel-installation/  for documentation and installation***
+ */
+
 
 Route::post('admin/add', 'AdminController@store')->name('admin.add');
 Route::post('admin/login', 'Auth\AdminLoginController@login')->name('admin.login');
